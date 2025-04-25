@@ -1,3 +1,9 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "https://rubberduckydrinkco.com/*"
+  to = "https://drinkducky.com/:splat"
+  status = 301
+  force = true
