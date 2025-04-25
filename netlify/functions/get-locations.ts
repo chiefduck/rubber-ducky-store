@@ -1,7 +1,7 @@
 import type { Handler } from "@netlify/functions"
 
 const handler: Handler = async (event, context) => {
-  const AIRTABLE_KEY = process.env.VITE_AIRTABLE_KEY
+    const AIRTABLE_KEY = process.env.DUCKY_LOCATIONS_SECRET;
   const BASE_ID = "app8uQ8vVJMiI8gWb"
   const TABLE_NAME = "Locations"
 
