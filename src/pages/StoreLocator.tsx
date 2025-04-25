@@ -1,32 +1,63 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { locations } from "@/data/locations";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
 
 const StoreLocator = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
+  const [locations, setLocations] = useState([]);
 
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
+  useEffect(() => {
+    fetch("https://api.airtable.com/v0/app8uQ8vVJMiI8gWb/Locations", {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_AIRTABLE_KEY}`
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("📦 Airtable Data:", data); // 👈 Add this
+        const mapped = data.records.map((record) => {
+          const f = record.fields ?? {};
+        
+          return {
+            id: record.id,
+            name: (f["name"] || f["name "] || "").trim(),
+            address: (f["address"] || f[" address "] || "").trim(),
+            city: (f["city"] || f[" city "] || "").trim(),
+            state: (f["state"] || f[" state "] || "").trim(),
+            zipCode: String(f["zipCode"] || f[" zipCode "] || ""),
+            phone: (f["phone"] || f[" phone "] || "").trim(),
+            hours: (f["hours"] || f[" hours "] || "").trim(),
+            type: (f["type"] || f[" type "] || "").trim(),
+            latitude: Number(f["latitude"] || f[" latitude "] || null),
+            longitude: Number(f["longitude"] || f[" longitude "] || null)
+          };
+        });
+        
+        setLocations(mapped);
+      })
+      .catch((err) => console.error("❌ Airtable Fetch Error:", err));
+  }, []);
+  
 
   const filteredLocations = locations.filter((location) => {
     const matchesSearch =
-      location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      location.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      location.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      location.zipCode.includes(searchTerm);
+      location.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.zipCode?.includes(searchTerm);
 
     const matchesType =
-      selectedType === "All" || location.type === selectedType.toLowerCase();
+      selectedType === "All" || location.type?.toLowerCase() === selectedType.toLowerCase();
 
     return matchesSearch && matchesType;
-  
   });
 
   return (
@@ -70,7 +101,7 @@ const StoreLocator = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-black">Store Locations</h2>
+             <h2 className="text-2xl font-bold mb-6 text-black">Store Locations</h2>
 
             {filteredLocations.length === 0 ? (
               <div className="text-center py-8">
@@ -98,8 +129,8 @@ const StoreLocator = () => {
           </div>
 
           <div className="rounded-lg overflow-hidden h-[500px]">
-  <Map locations={filteredLocations} />
-</div>
+            <Map locations={filteredLocations} />
+          </div>
         </div>
 
         <div className="mt-16 text-center">
