@@ -39,7 +39,7 @@ export const Header = () => {
           <Link to="/" className="text-black font-medium hover:text-ducky-red transition-colors">
             Home
           </Link>
-          <Link to="/products" className="text-black font-medium hover:text-ducky-red transition-colors">
+          <Link to="https://duckydrinks.com" className="text-black font-medium hover:text-ducky-red transition-colors">
             Shop
           </Link>
           <Link to="/recipes" className="text-black font-medium hover:text-ducky-red transition-colors">

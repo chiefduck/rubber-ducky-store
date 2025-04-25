@@ -12,40 +12,28 @@ const StoreLocator = () => {
   const [selectedType, setSelectedType] = useState("All");
   const [locations, setLocations] = useState([]);
 
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-
   useEffect(() => {
-    fetch("https://api.airtable.com/v0/app8uQ8vVJMiI8gWb/Locations", {
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_AIRTABLE_KEY}`
-      }
-    })
+    fetch("/.netlify/functions/get-locations")
       .then((res) => res.json())
       .then((data) => {
-        console.log("📦 Airtable Data:", data); // 👈 Add this
-        const mapped = data.records.map((record) => {
-          const f = record.fields ?? {};
-        
-          return {
-            id: record.id,
-            name: (f["name"] || f["name "] || "").trim(),
-            address: (f["address"] || f[" address "] || "").trim(),
-            city: (f["city"] || f[" city "] || "").trim(),
-            state: (f["state"] || f[" state "] || "").trim(),
-            zipCode: String(f["zipCode"] || f[" zipCode "] || ""),
-            phone: (f["phone"] || f[" phone "] || "").trim(),
-            hours: (f["hours"] || f[" hours "] || "").trim(),
-            type: (f["type"] || f[" type "] || "").trim(),
-            latitude: Number(f["latitude"] || f[" latitude "] || null),
-            longitude: Number(f["longitude"] || f[" longitude "] || null)
-          };
-        });
-        
+        const mapped = data.map((f) => ({
+          id: f.id,
+          name: f.name?.trim(),
+          address: f.address?.trim(),
+          city: f.city?.trim(),
+          state: f.state?.trim(),
+          zipCode: String(f.zipCode || ""),
+          phone: f.phone?.trim(),
+          hours: f.hours?.trim(),
+          type: f.type?.trim(),
+          latitude: Number(f.latitude || null),
+          longitude: Number(f.longitude || null)
+        }));
+
         setLocations(mapped);
       })
-      .catch((err) => console.error("❌ Airtable Fetch Error:", err));
+      .catch((err) => console.error("❌ Fetch error:", err));
   }, []);
-  
 
   const filteredLocations = locations.filter((location) => {
     const matchesSearch =
@@ -101,7 +89,7 @@ const StoreLocator = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="bg-white p-6 rounded-lg shadow-md">
-             <h2 className="text-2xl font-bold mb-6 text-black">Store Locations</h2>
+            <h2 className="text-2xl font-bold mb-6 text-black">Store Locations</h2>
 
             {filteredLocations.length === 0 ? (
               <div className="text-center py-8">
@@ -116,12 +104,20 @@ const StoreLocator = () => {
                     <p className="text-black/70 mb-2">
                       {location.city}, {location.state} {location.zipCode}
                     </p>
-                    <p className="text-black/70 mb-2">{location.phone}</p>
-                    <p className="text-sm text-black/60 mb-3">{location.hours}</p>
-                    <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Get Directions
-                    </Button>
+                    {location.phone && <p className="text-black/70 mb-2">{location.phone}</p>}
+                    {location.hours && <p className="text-sm text-black/60 mb-3">{location.hours}</p>}
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${location.address}, ${location.city}, ${location.state} ${location.zipCode}`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Get Directions
+                      </Button>
+                    </a>
                   </div>
                 ))}
               </div>
