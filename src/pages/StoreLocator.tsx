@@ -29,7 +29,6 @@ const StoreLocator = () => {
           latitude: Number(f.latitude || null),
           longitude: Number(f.longitude || null)
         }));
-
         setLocations(mapped);
       })
       .catch((err) => console.error("❌ Fetch error:", err));
@@ -53,6 +52,7 @@ const StoreLocator = () => {
       <Header />
 
       <main className="container mx-auto py-12 px-4 md:px-8">
+        {/* Title */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-black">Find Our Drinks</h1>
           <p className="text-lg text-black/70 max-w-2xl mx-auto">
@@ -61,6 +61,7 @@ const StoreLocator = () => {
           </p>
         </div>
 
+        {/* Search Input */}
         <div className="max-w-md mx-auto mb-8">
           <div className="relative">
             <Input
@@ -74,21 +75,24 @@ const StoreLocator = () => {
           </div>
         </div>
 
-        <div className="flex justify-center gap-4 mb-12">
+        {/* Filter Buttons */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {["All", "Retail", "Bar", "Restaurant", "Liquor Store"].map((type) => (
             <Button
               key={type}
               variant={selectedType === type ? "yellow" : "outline"}
-              className="capitalize"
               onClick={() => setSelectedType(type)}
+              className="capitalize text-sm px-4 py-2"
             >
               {type}
             </Button>
           ))}
         </div>
 
+        {/* Map + Locations */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          {/* Locations List */}
+          <div className="bg-white p-6 rounded-2xl shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-black">Store Locations</h2>
 
             {filteredLocations.length === 0 ? (
@@ -96,39 +100,56 @@ const StoreLocator = () => {
                 <p className="text-black/70">No locations found. Try adjusting your search.</p>
               </div>
             ) : (
-              <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+              <div className="space-y-8 max-h-[600px] overflow-y-auto pr-2">
                 {filteredLocations.map((location) => (
-                  <div key={location.id} className="border-b border-gray-200 pb-6 last:border-b-0">
-                    <h3 className="font-bold text-lg mb-1 text-black">{location.name}</h3>
-                    <p className="text-black/70 mb-2">{location.address}</p>
-                    <p className="text-black/70 mb-2">
-                      {location.city}, {location.state} {location.zipCode}
-                    </p>
-                    {location.phone && <p className="text-black/70 mb-2">{location.phone}</p>}
-                    {location.hours && <p className="text-sm text-black/60 mb-3">{location.hours}</p>}
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        `${location.address}, ${location.city}, ${location.state} ${location.zipCode}`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Get Directions
-                      </Button>
-                    </a>
+                  <div
+                    key={location.id}
+                    className="border-b border-gray-300 pb-6 last:border-b-0"
+                  >
+                    <div className="flex flex-col">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="text-lg font-bold text-black">{location.name}</h3>
+                        <span className="text-xs text-white bg-ducky-red rounded-full px-2 py-0.5">
+                          {location.type}
+                        </span>
+                      </div>
+
+                      <p className="text-black/70">{location.address}</p>
+                      <p className="text-black/70">
+                        {location.city}, {location.state} {location.zipCode}
+                      </p>
+                      {location.phone && (
+                        <p className="text-black/70 mt-1">{location.phone}</p>
+                      )}
+                      {location.hours && (
+                        <p className="text-black/50 text-xs mt-1">{location.hours}</p>
+                      )}
+                      {/* Google Maps Directions */}
+                      {location.latitude && location.longitude && (
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-ducky-red border border-ducky-red hover:bg-ducky-red/10 mt-3 px-3 py-2 rounded-lg text-sm font-semibold"
+                        >
+                          <MapPin className="h-4 w-4 mr-2" />
+                          Get Directions
+                        </a>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="rounded-lg overflow-hidden h-[500px]">
+          {/* Map Display */}
+          <div className="rounded-2xl overflow-hidden h-[600px] bg-gray-300">
             <Map locations={filteredLocations} />
           </div>
         </div>
 
+        {/* Bottom CTA */}
         <div className="mt-16 text-center">
           <h2 className="text-2xl font-bold mb-4 text-black">Can't Find Our Drinks Near You?</h2>
           <p className="text-lg text-black/70 max-w-2xl mx-auto mb-6">
@@ -139,8 +160,12 @@ const StoreLocator = () => {
             <Button variant="yellow" size="lg" asChild>
               <Link to="/suggest">Suggest a Location</Link>
             </Button>
-            <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10" asChild>
-              <Link to="https://rubberduckydrinkco.com/products/classic-margarita" target="_blank">
+            <Button
+              variant="outline"
+              className="text-ducky-red border-ducky-red hover:bg-ducky-red/10"
+              asChild
+            >
+              <Link to="https://duckydrinks.com/collections/all" target="_blank">
                 Shop Online
               </Link>
             </Button>
