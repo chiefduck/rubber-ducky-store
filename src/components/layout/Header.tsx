@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { ShoppingCart, Menu, Search, User, LogOut } from "lucide-react";
+import { Menu, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,9 +38,13 @@ export const Header = () => {
           <Link to="/" className="text-black font-medium hover:text-ducky-red transition-colors">
             Home
           </Link>
-          <Link to="https://duckydrinks.com" className="text-black font-medium hover:text-ducky-red transition-colors">
+          <a 
+            href="https://duckydrinks.com/products/classic-margarita" 
+            className="text-black font-medium hover:text-ducky-red transition-colors"
+            target="_blank" rel="noopener noreferrer"
+          >
             Shop
-          </Link>
+          </a>
           <Link to="/recipes" className="text-black font-medium hover:text-ducky-red transition-colors">
             Recipes
           </Link>
@@ -75,13 +78,34 @@ export const Header = () => {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/account" className="cursor-pointer w-full">Account Settings</Link>
+                  <a 
+                    href="https://account.rubberduckydrinkco.com" 
+                    className="cursor-pointer w-full" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Account Settings
+                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/account" className="cursor-pointer w-full">My Orders</Link>
+                  <a 
+                    href="https://account.rubberduckydrinkco.com" 
+                    className="cursor-pointer w-full"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    My Orders
+                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/account" className="cursor-pointer w-full">My Reviews</Link>
+                  <a 
+                    href="https://account.rubberduckydrinkco.com" 
+                    className="cursor-pointer w-full"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    My Reviews
+                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
@@ -91,21 +115,14 @@ export const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link to="/auth">
+            <a href="https://account.rubberduckydrinkco.com" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
-            </Link>
+            </a>
           )}
-          
-          <Link to="/cart">
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute top-0 right-0 bg-ducky-red text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                0
-              </span>
-            </Button>
-          </Link>
+
+          {/* Cart hidden for now */}
         </div>
       </div>
       
@@ -120,13 +137,15 @@ export const Header = () => {
             >
               Home
             </Link>
-            <Link 
-              to="/products" 
+            <a 
+              href="https://duckydrinks.com/products/classic-margarita" 
               className="text-black font-medium hover:text-ducky-red transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
             >
               Shop
-            </Link>
+            </a>
             <Link 
               to="/recipes" 
               className="text-black font-medium hover:text-ducky-red transition-colors"
@@ -155,16 +174,25 @@ export const Header = () => {
             >
               Find Us
             </Link>
-            
+            <Link 
+              to="/contact" 
+              className="text-black font-medium hover:text-ducky-red transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+
             {user ? (
               <>
-                <Link 
-                  to="/account" 
+                <a 
+                  href="https://account.rubberduckydrinkco.com" 
                   className="text-black font-medium hover:text-ducky-red transition-colors"
+                  target="_blank" 
+                  rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   My Account
-                </Link>
+                </a>
                 <button 
                   onClick={() => {
                     signOut();
@@ -176,13 +204,15 @@ export const Header = () => {
                 </button>
               </>
             ) : (
-              <Link 
-                to="/auth" 
+              <a 
+                href="https://account.rubberduckydrinkco.com"
                 className="text-black font-medium hover:text-ducky-red transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sign In
-              </Link>
+              </a>
             )}
           </nav>
         </div>
