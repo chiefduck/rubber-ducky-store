@@ -125,19 +125,19 @@ const StoreLocator = () => {
                         <p className="text-black/50 text-xs mt-1">{location.hours}</p>
                       )}
                       {/* Google Maps Directions */}
-                      {location.latitude && location.longitude && (
-                       <a 
-                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.address}, ${location.city}, ${location.state} ${location.zipCode}`)}`} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                     >
-                       <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full">
-                         <MapPin className="h-4 w-4 mr-2" />
-                         Get Directions
-                       </Button>
-                     </a>
-                     
-                      )}
+                      {location.address && location.city && location.state && (
+  <a 
+    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.address}, ${location.city}, ${location.state} ${location.zipCode}`)}`} 
+    target="_blank" 
+    rel="noopener noreferrer"
+  >
+    <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full">
+      <MapPin className="h-4 w-4 mr-2" />
+      Get Directions
+    </Button>
+  </a>
+)}
+
                     </div>
                   </div>
                 ))}
