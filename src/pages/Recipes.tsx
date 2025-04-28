@@ -57,17 +57,26 @@ const Recipes = () => {
                 to={`/recipes/${recipe.slug}`}
                 className="group"
               >
-                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                  <div className="h-48 bg-gray-200 relative overflow-hidden">
-                    <div className="w-full h-full bg-gradient-to-br from-ducky-yellow/30 to-ducky-blue/20 flex items-center justify-center">
-                      <span className="text-black/50 text-sm">Recipe Image</span>
-                    </div>
-                    {recipe.featured && (
-                      <div className="absolute top-2 right-2 bg-ducky-red text-white text-xs font-bold py-1 px-2 rounded">
-                        Featured
-                      </div>
-                    )}
-                  </div>
+                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow h-full flex flex-col">
+  <div className="h-48 bg-gray-200 relative overflow-hidden">
+    {recipe.image ? (
+      <img
+        src={recipe.image}
+        alt={recipe.title}
+        className="w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-0"
+        onLoad={(e) => (e.target.style.opacity = 1)}
+      />
+    ) : (
+      <div className="w-full h-full bg-gradient-to-br from-ducky-yellow/30 to-ducky-blue/20 flex items-center justify-center">
+        <span className="text-black/50 text-sm">Recipe Image</span>
+      </div>
+    )}
+    {recipe.featured && (
+      <div className="absolute top-2 right-2 bg-ducky-red text-white text-xs font-bold py-1 px-2 rounded">
+        Featured
+      </div>
+    )}
+  </div>
                   
                   <div className="p-6">
                     <h3 className="font-bold text-xl mb-2 text-black group-hover:text-ducky-red transition-colors">
