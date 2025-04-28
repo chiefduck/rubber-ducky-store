@@ -7,7 +7,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
-console.log("SUPABASE URL:", supabaseUrl);
-console.log("SUPABASE ANON KEY:", supabaseAnonKey);
+// console.log("SUPABASE URL:", supabaseUrl);
+// console.log("SUPABASE ANON KEY:", supabaseAnonKey);
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
