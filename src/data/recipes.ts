@@ -41,59 +41,57 @@ export const recipes: Recipe[] = [
     relatedProductIds: ["4"]
   },
   {
-    id: "2",
-    title: "Berry Mint Fizz",
-    slug: "berry-mint-fizz",
-    description: "A delightful combination of our Berry Bliss with fresh muddled mint and lime creates an elevated mocktail perfect for summer gatherings or a refreshing afternoon treat.",
-    image: "/images/recipes/berry-mint-fizz.jpg",
-    ingredients: [
-      "1 can Rubber Ducky Berry Bliss",
+    "id": "2",
+    "title": "Minty Lime Fizz",
+    "slug": "minty-lime-fizz",
+    "description": "A bright, refreshing mocktail made with Rubber Ducky Classic Lime, fresh mint, and lime wedges. Perfect for sunny afternoons or a quick, zesty pick-me-up!",
+    "image": "/images/recipes/minty-lime-fizz.jpg",
+    "ingredients": [
+      "1 can Rubber Ducky Classic Lime",
       "6-8 fresh mint leaves",
       "½ lime, cut into wedges",
       "1 tsp simple syrup (optional)",
-      "Fresh berries for garnish",
       "Crushed ice"
     ],
-    instructions: [
-      "In a glass, muddle mint leaves and lime wedges gently",
-      "Add simple syrup if desired for additional sweetness",
-      "Fill glass with crushed ice",
-      "Pour Rubber Ducky Berry Bliss over the ice",
-      "Stir gently to combine flavors",
-      "Garnish with fresh berries and a mint sprig"
+    "instructions": [
+      "In a glass, gently muddle the mint leaves and lime wedges.",
+      "Add simple syrup if desired for a touch of sweetness.",
+      "Fill the glass with crushed ice.",
+      "Pour Rubber Ducky Classic Lime over the ice.",
+      "Stir gently and enjoy immediately."
     ],
-    prepTime: "8 minutes",
-    servings: 1,
-    featured: true,
-    relatedProductIds: ["2"]
+    "prepTime": "5 minutes",
+    "servings": 1,
+    "featured": true,
+    "relatedProductIds": ["1"]
   },
+  
   {
-    id: "3",
-    title: "Cucumber Cooler",
-    slug: "cucumber-cooler",
-    description: "Take our Crisp Cucumber to the next level with this spa-inspired cooler featuring fresh cucumber slices, basil, and a hint of honey for a perfectly balanced refreshment.",
-    image: "/images/recipes/cucumber-cooler.jpg",
-    ingredients: [
-      "1 can Rubber Ducky Crisp Cucumber",
+    "id": "3",
+    "title": "Cucumber Lime Cooler",
+    "slug": "cucumber-lime-cooler",
+    "description": "A cool, crisp refresher made with Rubber Ducky Classic Lime, fresh cucumber, and a squeeze of lime. A spa day in a glass!",
+    "image": "/images/recipes/cucumber-lime-cooler.jpg",
+    "ingredients": [
+      "1 can Rubber Ducky Classic Lime",
       "3-4 thin cucumber slices, plus extra for garnish",
-      "2-3 fresh basil leaves",
-      "½ tsp honey",
-      "Squeeze of fresh lime juice",
+      "2-3 fresh basil leaves or mint leaves",
+      "½ tsp honey or agave (optional)",
       "Ice cubes"
     ],
-    instructions: [
-      "In a shaker or glass, muddle cucumber slices with basil leaves and honey",
-      "Add a squeeze of fresh lime juice",
-      "Add ice and shake well (or stir vigorously if using a glass)",
-      "Strain into a tall glass filled with fresh ice",
-      "Top with Rubber Ducky Crisp Cucumber",
-      "Garnish with cucumber slice and basil leaf"
+    "instructions": [
+      "In a shaker or glass, gently muddle cucumber slices with basil (or mint) and honey (or agave).",
+      "Add ice and a splash of fresh lime juice if desired.",
+      "Shake well or stir vigorously.",
+      "Pour Rubber Ducky Classic Lime over the mix.",
+      "Strain into a glass filled with ice, garnish with cucumber slices and herbs."
     ],
-    prepTime: "7 minutes",
-    servings: 1,
-    featured: false,
-    relatedProductIds: ["3"]
+    "prepTime": "5 minutes",
+    "servings": 1,
+    "featured": false,
+    "relatedProductIds": ["1"]
   },
+  
   {
     id: "4",
     title: "Margarita Mocktail Supreme",
