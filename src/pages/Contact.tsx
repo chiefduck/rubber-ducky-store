@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Inbox, Users, CalendarHeart, Megaphone } from "lucide-react";
+import { Inbox, Users, CalendarHeart, Megaphone } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,16 +14,35 @@ const Contact = () => {
     type: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Future: hook up to Make.com or Netlify / GHL
-    console.log("Submitted:", formData);
+    setLoading(true);
+
+    const form = e.currentTarget;
+    const formDataObj = new FormData(form);
+
+    try {
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formDataObj as any).toString(),
+      });
+
+      toast({ title: "Message sent!", description: "Thanks for reaching out — we’ll reply soon." });
+      setFormData({ name: "", email: "", type: "", message: "" });
+    } catch (err) {
+      toast({ title: "Error", description: "Message failed to send. Try again.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,55 +59,25 @@ const Contact = () => {
 
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
           <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <Inbox className="text-ducky-red mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-ducky-red">General Inquiries</h3>
-                <p className="text-black/70 text-sm">For all other messages, use the form or email us at <span className="font-medium">hello@rubberduckydrinkco.com</span></p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <Users className="text-ducky-red mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-ducky-red">Wholesale / Retail</h3>
-                <p className="text-black/70 text-sm">Interested in stocking Rubber Ducky? Visit our <a href="/wholesale/apply" className="underline">Wholesale page</a>.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <CalendarHeart className="text-ducky-red mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-ducky-red">Event Requests</h3>
-                <p className="text-black/70 text-sm">Want Ducky at your event or festival? Send us a message with the details!</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <Megaphone className="text-ducky-red mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-ducky-red">Press & Media</h3>
-                <p className="text-black/70 text-sm">We’re happy to chat. For press inquiries, please contact our media team.</p>
-              </div>
-            </div>
+            <ContactInfo icon={Inbox} title="General Inquiries" text="For all other messages, use the form or email us at hello@rubberduckydrinkco.com" />
+            <ContactInfo icon={Users} title="Wholesale / Retail" text="Interested in stocking Rubber Ducky? Visit our Wholesale page." link="/wholesale/apply" />
+            <ContactInfo icon={CalendarHeart} title="Event Requests" text="Want Ducky at your event or festival? Send us a message with the details!" />
+            <ContactInfo icon={Megaphone} title="Press & Media" text="We’re happy to chat. For press inquiries, please contact our media team." />
           </div>
 
           <form
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            data-netlify-recaptcha="true"
             onSubmit={handleSubmit}
             className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
           >
-            <Input
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              name="email"
-              type="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <input type="hidden" name="form-name" value="contact" />
+            <input type="hidden" name="bot-field" />
+            <Input name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required />
+            <Input name="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleChange} required />
             <select
               name="type"
               value={formData.type}
@@ -101,16 +91,10 @@ const Contact = () => {
               <option value="event">Event Opportunity</option>
               <option value="press">Press / Media</option>
             </select>
-            <Textarea
-              name="message"
-              placeholder="Your Message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-            />
-            <div className="g-recaptcha" data-sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}></div>
-            <Button type="submit" variant="red" className="w-full font-bold text-lg py-3 mt-4">
-              Send Message
+            <Textarea name="message" placeholder="Your Message" value={formData.message} onChange={handleChange} required />
+            <div className="g-recaptcha" data-netlify-recaptcha="true" />
+            <Button type="submit" variant="red" className="w-full font-bold text-lg py-3 mt-4" disabled={loading}>
+              {loading ? "Sending..." : "Send Message"}
             </Button>
           </form>
         </div>
@@ -120,5 +104,22 @@ const Contact = () => {
     </>
   );
 };
+
+const ContactInfo = ({ icon: Icon, title, text, link }: any) => (
+  <div className="flex items-start gap-4">
+    <Icon className="text-ducky-red mt-1" />
+    <div>
+      <h3 className="text-xl font-semibold text-ducky-red">{title}</h3>
+      <p className="text-black/70 text-sm">
+        {link ? (
+          <>
+            {text.split("Visit")[0]}
+            <a href={link} className="underline">Visit our Wholesale page</a>
+          </>
+        ) : text}
+      </p>
+    </div>
+  </div>
+);
 
 export default Contact;
