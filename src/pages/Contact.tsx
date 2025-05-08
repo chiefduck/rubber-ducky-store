@@ -28,7 +28,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    // If honeypot is filled, block submission
+    // Block bot submissions
     if (formData["bot-field"]) {
       console.warn("Bot detected. Submission blocked.");
       setLoading(false);
@@ -38,8 +38,8 @@ const Contact = () => {
     try {
       await fetch("https://hook.us2.make.com/6q3ncobyykeu5vq8e4bdpexfoe4t0hy8", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
       });
 
       toast({ title: "Message sent!", description: "Thanks for reaching out — we’ll reply soon." });
