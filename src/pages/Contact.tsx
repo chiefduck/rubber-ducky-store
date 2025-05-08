@@ -101,12 +101,14 @@ const Contact = () => {
       </section>
 
       {/* ✅ Hidden Static Form for Netlify Detection */}
-      <form name="contact" netlify hidden>
-        <input type="text" name="name" />
-        <input type="email" name="email" />
-        <input type="text" name="type" />
-        <textarea name="message" />
-      </form>
+      <noscript>
+  <form name="contact" netlify>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="text" name="type" />
+    <textarea name="message"></textarea>
+  </form>
+</noscript>
 
       <Footer />
     </>
