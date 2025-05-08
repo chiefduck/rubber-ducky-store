@@ -13,7 +13,9 @@ const Contact = () => {
     email: "",
     type: "",
     message: "",
+    "bot-field": "", // honeypot
   });
+
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -26,18 +28,22 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    const form = e.currentTarget;
-    const formDataObj = new FormData(form);
+    // If honeypot is filled, block submission
+    if (formData["bot-field"]) {
+      console.warn("Bot detected. Submission blocked.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      await fetch("/", {
+      await fetch("https://hook.us2.make.com/6q3ncobyykeu5vq8e4bdpexfoe4t0hy8", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formDataObj as any).toString(),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       toast({ title: "Message sent!", description: "Thanks for reaching out — we’ll reply soon." });
-      setFormData({ name: "", email: "", type: "", message: "" });
+      setFormData({ name: "", email: "", type: "", message: "", "bot-field": "" });
     } catch (err) {
       toast({ title: "Error", description: "Message failed to send. Try again.", variant: "destructive" });
     } finally {
@@ -65,17 +71,15 @@ const Contact = () => {
             <ContactInfo icon={Megaphone} title="Press & Media" text="We’re happy to chat. For press inquiries, please contact our media team." />
           </div>
 
-          <form
-            name="contact"
-            method="POST"
-            data-netlify="true"
-            data-netlify-honeypot="bot-field"
-            data-netlify-recaptcha="true"
-            onSubmit={handleSubmit}
-            className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
-          >
-            <input type="hidden" name="form-name" value="contact" />
-            <input type="hidden" name="bot-field" />
+          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+            {/* Honeypot Field */}
+            <input
+              type="hidden"
+              name="bot-field"
+              value={formData["bot-field"]}
+              onChange={handleChange}
+            />
+
             <Input name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required />
             <Input name="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleChange} required />
             <select
@@ -92,23 +96,12 @@ const Contact = () => {
               <option value="press">Press / Media</option>
             </select>
             <Textarea name="message" placeholder="Your Message" value={formData.message} onChange={handleChange} required />
-            <div className="g-recaptcha" data-netlify-recaptcha="true" />
             <Button type="submit" variant="red" className="w-full font-bold text-lg py-3 mt-4" disabled={loading}>
               {loading ? "Sending..." : "Send Message"}
             </Button>
           </form>
         </div>
       </section>
-
-      {/* ✅ Hidden Static Form for Netlify Detection */}
-      <noscript>
-  <form name="contact" netlify>
-    <input type="text" name="name" />
-    <input type="email" name="email" />
-    <input type="text" name="type" />
-    <textarea name="message"></textarea>
-  </form>
-</noscript>
 
       <Footer />
     </>
