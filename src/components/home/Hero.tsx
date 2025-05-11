@@ -12,7 +12,7 @@ export const Hero = () => {
       headline: "SIP BACK & SMILE — IT’S DUCKY TIME",
       subheading: "Non-alcoholic margaritas made with real lime, natural agave, and feel-good energy. All the flavor, none of the Buzz.",
       ctaText: "Find in Stores",
-      ctaLink: "/StoreLocator",
+      ctaLink: "/Store-Locator",
       image: "/images/products/yellow-can.png",
       bgColor: "bg-ducky-yellow"
     },
@@ -20,7 +20,7 @@ export const Hero = () => {
       headline: "QUACK ONE OPEN AND LET THE GOOD TIMES POUR",
       subheading: "Delicious zero-proof drinks made with real ingredients—crafted for good vibes, better taste, and sunny moments anytime, anywhere.",
       ctaText: "Find in Stores",
-      ctaLink: "/StoreLocator",
+      ctaLink: "/Store-Locator",
       image: "/images/products/yellow-can-dual.png",
       bgColor: "bg-ducky-yellow"
     }
