@@ -3,39 +3,58 @@ import mapboxgl from "mapbox-gl";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-const Map = () => {
-  const mapContainerRef = useRef(null);
+interface Location {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+const Map = ({ locations = [] }: { locations: Location[] }) => {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
+    if (!mapContainerRef.current || !locations.length) return;
+
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-95.7129, 37.0902],
+      center: [-95.7129, 37.0902], // Center on USA
       zoom: 3
     });
 
-    map.on("load", () => {
-      map.addSource("stores", {
-        type: "vector",
-        url: "mapbox://rubberduckydrinkco.ctkypivd"
-      });
+    mapRef.current = map;
 
-      map.addLayer({
-        id: "store-pins",
-        type: "circle",
-        source: "stores",
-        "source-layer": "749ca6-4b-0cmxtl",
-        paint: {
-          "circle-radius": 6,
-          "circle-color": "#D74A39"
-        }
-      });
+    // Add zoom + rotation controls
+    map.addControl(new mapboxgl.NavigationControl());
+
+    locations.forEach((location) => {
+      if (!location.latitude || !location.longitude) return;
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <strong>${location.name}</strong><br/>
+        ${location.address}<br/>
+        ${location.city}, ${location.state} ${location.zipCode}
+      `);
+
+      new mapboxgl.Marker({ color: "#D74A39" })
+        .setLngLat([location.longitude, location.latitude])
+        .setPopup(popup)
+        .addTo(map);
     });
 
-    return () => map.remove();
-  }, []);
+    return () => {
+      map.remove();
+    };
+  }, [locations]);
 
   return <div ref={mapContainerRef} className="w-full h-full rounded-lg" />;
 };
 
 export default Map;
+
