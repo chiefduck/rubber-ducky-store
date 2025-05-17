@@ -6,8 +6,8 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 interface Location {
   id: string;
   name: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   address: string;
   city: string;
   state: string;
@@ -19,42 +19,53 @@ const Map = ({ locations = [] }: { locations: Location[] }) => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
-    if (!mapContainerRef.current || !locations.length) return;
+    if (!mapContainerRef.current || locations.length === 0) return;
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-95.7129, 37.0902], // Center on USA
-      zoom: 3
+      center: [-105.0, 39.7],
+      zoom: 7,
     });
 
     mapRef.current = map;
-
-    // Add zoom + rotation controls
     map.addControl(new mapboxgl.NavigationControl());
 
-    locations.forEach((location) => {
-      if (!location.latitude || !location.longitude) return;
+    const validLocations = locations.filter(
+      (loc) =>
+        loc.latitude !== null &&
+        loc.longitude !== null &&
+        !isNaN(loc.latitude) &&
+        !isNaN(loc.longitude)
+    );
 
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-        <strong>${location.name}</strong><br/>
-        ${location.address}<br/>
-        ${location.city}, ${location.state} ${location.zipCode}
-      `);
+    if (validLocations.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
 
-      new mapboxgl.Marker({ color: "#D74A39" })
-        .setLngLat([location.longitude, location.latitude])
-        .setPopup(popup)
-        .addTo(map);
-    });
+      validLocations.forEach((loc) => {
+        bounds.extend([loc.longitude!, loc.latitude!]);
+      });
 
-    return () => {
-      map.remove();
-    };
+      map.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+
+      validLocations.forEach((location) => {
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          <strong>${location.name}</strong><br/>
+          ${location.address}<br/>
+          ${location.city}, ${location.state} ${location.zipCode}
+        `);
+
+        new mapboxgl.Marker({ color: "#D74A39" })
+          .setLngLat([location.longitude!, location.latitude!])
+          .setPopup(popup)
+          .addTo(map);
+      });
+    }
+
+    return () => map.remove();
   }, [locations]);
 
   return <div ref={mapContainerRef} className="w-full h-full rounded-lg" />;
 };
 
 export default Map;
-

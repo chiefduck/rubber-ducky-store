@@ -7,28 +7,51 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
 
+type Location = {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone?: string;
+  hours?: string;
+  type?: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
 const StoreLocator = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
-  const [locations, setLocations] = useState([]);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     fetch("/.netlify/functions/get-locations")
       .then((res) => res.json())
       .then((data) => {
-        const mapped = data.map((f) => ({
-          id: f.id,
-          name: f.name?.trim(),
-          address: f.address?.trim(),
-          city: f.city?.trim(),
-          state: f.state?.trim(),
-          zipCode: String(f.zipCode || ""),
-          phone: f.phone?.trim(),
-          hours: f.hours?.trim(),
-          type: f.type?.trim(),
-          latitude: Number(f.latitude || null),
-          longitude: Number(f.longitude || null)
-        }));
+        const mapped: Location[] = data.map((f) => {
+          const lat = typeof f.latitude === "number" ? f.latitude : parseFloat(String(f.latitude || "").trim());
+          const lng = typeof f.longitude === "number" ? f.longitude : parseFloat(String(f.longitude || "").trim());
+
+          const latitude = !isNaN(lat) ? lat : null;
+          const longitude = !isNaN(lng) ? lng : null;
+
+          return {
+            id: f.id,
+            name: f.name?.trim() || "Unknown",
+            address: f.address?.trim() || "",
+            city: f.city?.trim() || "",
+            state: f.state?.trim() || "",
+            zipCode: String(f.zipCode || ""),
+            phone: f.phone?.trim(),
+            hours: f.hours?.trim(),
+            type: f.type?.trim(),
+            latitude,
+            longitude,
+          };
+        });
+
         setLocations(mapped);
       })
       .catch((err) => console.error("❌ Fetch error:", err));
@@ -44,7 +67,7 @@ const StoreLocator = () => {
     const matchesType =
       selectedType === "All" || location.type?.toLowerCase() === selectedType.toLowerCase();
 
-    return matchesSearch && matchesType;
+    return matchesSearch && matchesType && location.latitude !== null && location.longitude !== null && !isNaN(location.latitude) && !isNaN(location.longitude);
   });
 
   return (
@@ -124,20 +147,23 @@ const StoreLocator = () => {
                       {location.hours && (
                         <p className="text-black/50 text-xs mt-1">{location.hours}</p>
                       )}
-                      {/* Google Maps Directions */}
                       {location.address && location.city && location.state && (
-  <a 
-    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.address}, ${location.city}, ${location.state} ${location.zipCode}`)}`} 
-    target="_blank" 
-    rel="noopener noreferrer"
-  >
-    <Button variant="outline" className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full">
-      <MapPin className="h-4 w-4 mr-2" />
-      Get Directions
-    </Button>
-  </a>
-)}
-
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            `${location.address}, ${location.city}, ${location.state} ${location.zipCode}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button
+                            variant="outline"
+                            className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full"
+                          >
+                            <MapPin className="h-4 w-4 mr-2" />
+                            Get Directions
+                          </Button>
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}

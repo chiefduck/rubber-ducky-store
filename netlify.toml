@@ -2,4 +2,7 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-
+[dev]
+  framework = "vite"
+  targetPort = 8080
+  command = "yarn dev"
