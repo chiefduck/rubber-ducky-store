@@ -1,16 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin } from "lucide-react";
-
-const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-
-declare global {
-  interface Window {
-    grecaptcha: any;
-  }
-}
 
 const SuggestLocation = () => {
   const [formData, setFormData] = useState({
@@ -21,19 +13,7 @@ const SuggestLocation = () => {
     "bot-field": "", // Honeypot
   });
 
-  const [isCaptchaReady, setIsCaptchaReady] = useState(false);
-
-  useEffect(() => {
-    const loadCaptcha = () => {
-      if (window.grecaptcha) {
-        window.grecaptcha.ready(() => setIsCaptchaReady(true));
-      } else {
-        setTimeout(loadCaptcha, 500);
-      }
-    };
-
-    loadCaptcha();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,28 +22,20 @@ const SuggestLocation = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     // Block bot submissions
     if (formData["bot-field"]) {
       console.warn("Bot detected. Submission blocked.");
-      return;
-    }
-
-    if (!window.grecaptcha || !siteKey) {
-      alert("Captcha failed to load.");
+      setLoading(false);
       return;
     }
 
     try {
-      const token = await window.grecaptcha.execute(siteKey, { action: "submit" });
-
       await fetch("https://hook.us2.make.com/hkven6egr1clp7n5luofacw6u4p2s4lo", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          ...formData,
-          recaptcha: token,
-        }).toString(),
+        body: new URLSearchParams(formData as any).toString(),
       });
 
       alert("🎉 Thanks for suggesting a spot! We’ll check it out.");
@@ -71,6 +43,8 @@ const SuggestLocation = () => {
     } catch (error) {
       console.error("Submit error:", error);
       alert("⚠️ Submission failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,16 +73,13 @@ const SuggestLocation = () => {
 
         <Button
           type="submit"
-          disabled={!isCaptchaReady}
+          disabled={loading}
           className="bg-ducky-red text-white font-bold py-3 px-6 rounded shadow-md hover:bg-ducky-red/90 transition-all flex items-center justify-center gap-2"
         >
           <MapPin className="h-5 w-5" />
-          Submit Location
+          {loading ? "Submitting..." : "Submit Location"}
         </Button>
       </form>
-
-      {/* reCAPTCHA v3 script */}
-      <script src={`https://www.google.com/recaptcha/api.js?render=${siteKey}`}></script>
     </section>
   );
 };
