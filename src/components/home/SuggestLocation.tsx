@@ -18,6 +18,7 @@ const SuggestLocation = () => {
     email: "",
     store: "",
     message: "",
+    "bot-field": "", // Honeypot
   });
 
   const [isCaptchaReady, setIsCaptchaReady] = useState(false);
@@ -27,7 +28,7 @@ const SuggestLocation = () => {
       if (window.grecaptcha) {
         window.grecaptcha.ready(() => setIsCaptchaReady(true));
       } else {
-        setTimeout(loadCaptcha, 500); // Retry until it's ready
+        setTimeout(loadCaptcha, 500);
       }
     };
 
@@ -39,19 +40,38 @@ const SuggestLocation = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!window.grecaptcha || !siteKey) return alert("Captcha failed to load.");
+    // Block bot submissions
+    if (formData["bot-field"]) {
+      console.warn("Bot detected. Submission blocked.");
+      return;
+    }
 
-    window.grecaptcha.execute(siteKey, { action: "submit" }).then((token: string) => {
-      // 👇 You'll send this token to Make.com or Netlify later
-      console.log("reCAPTCHA Token:", token);
-      console.log("Form Data:", formData);
+    if (!window.grecaptcha || !siteKey) {
+      alert("Captcha failed to load.");
+      return;
+    }
 
-      // TEMP: basic alert to confirm it worked
-      alert("Submission successful (token logged in console)");
-    });
+    try {
+      const token = await window.grecaptcha.execute(siteKey, { action: "submit" });
+
+      await fetch("https://hook.us2.make.com/hkven6egr1clp7n5luofacw6u4p2s4lo", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          ...formData,
+          recaptcha: token,
+        }).toString(),
+      });
+
+      alert("🎉 Thanks for suggesting a spot! We’ll check it out.");
+      setFormData({ name: "", email: "", store: "", message: "", "bot-field": "" });
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("⚠️ Submission failed. Please try again.");
+    }
   };
 
   return (
@@ -69,6 +89,9 @@ const SuggestLocation = () => {
         onSubmit={handleSubmit}
         className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8 space-y-6"
       >
+        {/* Honeypot field (hidden) */}
+        <input type="hidden" name="bot-field" value={formData["bot-field"]} onChange={handleChange} />
+
         <Input name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required />
         <Input name="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleChange} required />
         <Input name="store" placeholder="Store Name + Location (City/State)" value={formData.store} onChange={handleChange} required />
@@ -84,11 +107,10 @@ const SuggestLocation = () => {
         </Button>
       </form>
 
-      {/* reCAPTCHA v2 (invisible style) */}
+      {/* reCAPTCHA v3 script */}
       <script src={`https://www.google.com/recaptcha/api.js?render=${siteKey}`}></script>
     </section>
   );
 };
 
 export default SuggestLocation;
-
