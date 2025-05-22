@@ -9,12 +9,15 @@ import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    phone: "",       // ← new optional field
     type: "",
     message: "",
-    "bot-field": "", // honeypot
+    "bot-field": "",
   });
+  
 
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -28,7 +31,6 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Block bot submissions
     if (formData["bot-field"]) {
       console.warn("Bot detected. Submission blocked.");
       setLoading(false);
@@ -42,10 +44,27 @@ const Contact = () => {
         body: new URLSearchParams(formData as any).toString(),
       });
 
-      toast({ title: "Message sent!", description: "Thanks for reaching out — we’ll reply soon." });
-      setFormData({ name: "", email: "", type: "", message: "", "bot-field": "" });
+      toast({
+        title: "Message sent!",
+        description: "Thanks for reaching out — we’ll reply soon.",
+      });
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        type: "",
+        message: "",
+        "bot-field": "",
+      });
+      
     } catch (err) {
-      toast({ title: "Error", description: "Message failed to send. Try again.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Message failed to send. Try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -65,10 +84,27 @@ const Contact = () => {
 
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
           <div className="space-y-6">
-            <ContactInfo icon={Inbox} title="General Inquiries" text="For all other messages, use the form or email us at hello@rubberduckydrinkco.com" />
-            <ContactInfo icon={Users} title="Wholesale / Retail" text="Interested in stocking Rubber Ducky? Visit our Wholesale page." link="/wholesale/apply" />
-            <ContactInfo icon={CalendarHeart} title="Event Requests" text="Want Ducky at your event or festival? Send us a message with the details!" />
-            <ContactInfo icon={Megaphone} title="Press & Media" text="We’re happy to chat. For press inquiries, please contact our media team." />
+            <ContactInfo
+              icon={Inbox}
+              title="General Inquiries"
+              text="For all other messages, use the form or email us at hello@rubberduckydrinkco.com"
+            />
+            <ContactInfo
+              icon={Users}
+              title="Wholesale / Retail"
+              text="Interested in stocking Rubber Ducky? Visit our Wholesale page."
+              link="/wholesale/apply"
+            />
+            <ContactInfo
+              icon={CalendarHeart}
+              title="Event Requests"
+              text="Want Ducky at your event or festival? Send us a message with the details!"
+            />
+            <ContactInfo
+              icon={Megaphone}
+              title="Press & Media"
+              text="We’re happy to chat. For press inquiries, please contact our media team."
+            />
           </div>
 
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
@@ -80,8 +116,40 @@ const Contact = () => {
               onChange={handleChange}
             />
 
-            <Input name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required />
-            <Input name="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleChange} required />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Input
+                name="firstName"
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                name="lastName"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <Input
+              name="email"
+              type="email"
+              placeholder="Your Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <Input
+  name="phone"
+  type="tel"
+  placeholder="Your Phone (optional)"
+  value={formData.phone}
+  onChange={handleChange}
+/>
+
+
             <select
               name="type"
               value={formData.type}
@@ -95,8 +163,21 @@ const Contact = () => {
               <option value="event">Event Opportunity</option>
               <option value="press">Press / Media</option>
             </select>
-            <Textarea name="message" placeholder="Your Message" value={formData.message} onChange={handleChange} required />
-            <Button type="submit" variant="red" className="w-full font-bold text-lg py-3 mt-4" disabled={loading}>
+
+            <Textarea
+              name="message"
+              placeholder="Your Message"
+              value={formData.message}
+              onChange={handleChange}
+              required
+            />
+
+            <Button
+              type="submit"
+              variant="red"
+              className="w-full font-bold text-lg py-3 mt-4"
+              disabled={loading}
+            >
               {loading ? "Sending..." : "Send Message"}
             </Button>
           </form>

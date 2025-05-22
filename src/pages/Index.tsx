@@ -32,10 +32,12 @@ const Index = () => {
         <TestimonialScroller />
        {/* <ComingSoon /> */}
         <Features />
+        <SuggestLocation />
+        <ArticlesPreview />
         <FAQSection />
       {/*  <Testimonials /> */}
-        <ArticlesPreview />
-        <SuggestLocation />
+        
+        
         <StoreCTA />
       </main>
       <Footer />
