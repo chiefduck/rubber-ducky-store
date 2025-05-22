@@ -16,6 +16,7 @@ import { ComingSoon } from "@/components/home/ComingSoon";
 import StoreCTA from "@/components/home/StoreCTA";
 import HowToEnjoy from "@/components/home/HowToEnjoy";
 import SuggestLocation from "@/components/home/SuggestLocation";
+import QuackOneOpen from "@/components/home/QuackOneOpen";
 
 
 const Index = () => {
@@ -32,6 +33,7 @@ const Index = () => {
         <TestimonialScroller />
        {/* <ComingSoon /> */}
         <Features />
+        <QuackOneOpen />
         <SuggestLocation />
         <ArticlesPreview />
         <FAQSection />

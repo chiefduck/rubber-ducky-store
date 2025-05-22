@@ -4,6 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MapPin } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SuggestLocation = () => {
   const [formData, setFormData] = useState({
@@ -105,7 +112,7 @@ const SuggestLocation = () => {
               id="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              placeholder="Jane"
+              placeholder="Chief"
               required
             />
           </div>
@@ -116,7 +123,7 @@ const SuggestLocation = () => {
               id="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              placeholder="Doe"
+              placeholder="Duck"
               required
             />
           </div>
@@ -149,19 +156,21 @@ const SuggestLocation = () => {
 
         <div>
           <Label htmlFor="storeType">Store Type</Label>
-          <select
-            name="storeType"
-            id="storeType"
-            value={formData.storeType}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md border-input bg-background text-sm"
-          >
-            <option value="">Select store type</option>
-            <option value="Liquor Store">Liquor Store</option>
-            <option value="Restaurant / Bar">Restaurant / Bar</option>
-            <option value="Other Retail">Other Retail</option>
-          </select>
+          <Select
+  name="storeType"
+  value={formData.storeType}
+  onValueChange={(value) => setFormData({ ...formData, storeType: value })}
+  required
+>
+  <SelectTrigger className="w-full">
+    <SelectValue placeholder="Select store type" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="Liquor Store">Liquor Store</SelectItem>
+    <SelectItem value="Restaurant / Bar">Restaurant / Bar</SelectItem>
+    <SelectItem value="Other Retail">Other Retail</SelectItem>
+  </SelectContent>
+</Select>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">

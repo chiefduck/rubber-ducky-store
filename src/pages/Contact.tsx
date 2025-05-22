@@ -2,29 +2,47 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Inbox, Users, CalendarHeart, Megaphone } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",       // ← new optional field
+    phone: "",
     type: "",
     message: "",
     "bot-field": "",
   });
-  
 
   const [loading, setLoading] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
   const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTypeChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, type: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +76,8 @@ const Contact = () => {
         message: "",
         "bot-field": "",
       });
-      
+
+      setShowThankYou(true);
     } catch (err) {
       toast({
         title: "Error",
@@ -73,7 +92,6 @@ const Contact = () => {
   return (
     <>
       <Header />
-
       <section className="py-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl font-extrabold text-ducky-red mb-2">Get In Touch</h1>
@@ -83,7 +101,7 @@ const Contact = () => {
         </div>
 
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
-          <div className="space-y-6">
+          <div className="space-y-8">
             <ContactInfo
               icon={Inbox}
               title="General Inquiries"
@@ -107,8 +125,8 @@ const Contact = () => {
             />
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
-            {/* Honeypot Field */}
+          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-6 border">
+            {/* Honeypot */}
             <input
               type="hidden"
               name="bot-field"
@@ -142,27 +160,24 @@ const Contact = () => {
               required
             />
             <Input
-  name="phone"
-  type="tel"
-  placeholder="Your Phone (optional)"
-  value={formData.phone}
-  onChange={handleChange}
-/>
-
-
-            <select
-              name="type"
-              value={formData.type}
+              name="phone"
+              type="tel"
+              placeholder="Your Phone (optional)"
+              value={formData.phone}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-4 py-3"
-              required
-            >
-              <option value="">Select Inquiry Type</option>
-              <option value="general">General Question</option>
-              <option value="vendor">Vendor Inquiry</option>
-              <option value="event">Event Opportunity</option>
-              <option value="press">Press / Media</option>
-            </select>
+            />
+
+            <Select value={formData.type} onValueChange={handleTypeChange} required>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Inquiry Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="general">General Question</SelectItem>
+                <SelectItem value="vendor">Vendor Inquiry</SelectItem>
+                <SelectItem value="event">Event Opportunity</SelectItem>
+                <SelectItem value="press">Press / Media</SelectItem>
+              </SelectContent>
+            </Select>
 
             <Textarea
               name="message"
@@ -183,24 +198,44 @@ const Contact = () => {
           </form>
         </div>
       </section>
-
       <Footer />
+
+      {/* Thank You Modal */}
+      <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
+        <DialogContent className="max-w-md text-center">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-ducky-red">Thank You!</DialogTitle>
+            <DialogDescription className="mt-2 text-black/80">
+              We’ve received your message and will be in touch soon.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => setShowThankYou(false)}
+            className="mt-6"
+            variant="outline"
+          >
+            Close
+          </Button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
 
 const ContactInfo = ({ icon: Icon, title, text, link }: any) => (
   <div className="flex items-start gap-4">
-    <Icon className="text-ducky-red mt-1" />
-    <div>
-      <h3 className="text-xl font-semibold text-ducky-red">{title}</h3>
-      <p className="text-black/70 text-sm">
+    <Icon className="text-ducky-red mt-1 shrink-0" />
+    <div className="text-left">
+      <h3 className="text-lg font-semibold text-ducky-red">{title}</h3>
+      <p className="text-black/70 text-sm mt-1">
         {link ? (
           <>
             {text.split("Visit")[0]}
             <a href={link} className="underline">Visit our Wholesale page</a>
           </>
-        ) : text}
+        ) : (
+          text
+        )}
       </p>
     </div>
   </div>

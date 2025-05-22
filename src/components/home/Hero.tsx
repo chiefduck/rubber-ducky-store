@@ -16,14 +16,7 @@ export const Hero = () => {
       image: "/images/products/yellow-can.png",
       bgColor: "bg-ducky-yellow"
     },
-    {
-      headline: "QUACK ONE OPEN AND LET THE GOOD TIMES POUR",
-      subheading: "Delicious zero-proof drinks made with real ingredients—crafted for good vibes, better taste, and sunny moments anytime, anywhere.",
-      ctaText: "Find in Stores",
-      ctaLink: "/Store-Locator",
-      image: "/images/products/yellow-can-dual.png",
-      bgColor: "bg-ducky-yellow"
-    }
+
   ];
   
   useEffect(() => {
