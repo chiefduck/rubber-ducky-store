@@ -32,6 +32,14 @@ const Contact = () => {
     "bot-field": "",
   });
 
+  const [errors, setErrors] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    type: false,
+    message: false,
+  });
+
   const [loading, setLoading] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const { toast } = useToast();
@@ -52,24 +60,30 @@ const Contact = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name in errors) {
+      setErrors((prev) => ({ ...prev, [name]: false }));
+    }
   };
 
   const handleTypeChange = (value: string) => {
     setFormData((prev) => ({ ...prev, type: value }));
+    setErrors((prev) => ({ ...prev, type: false }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    if (
-      formData["bot-field"] ||
-      isWhitespaceOnly(formData.firstName) ||
-      isWhitespaceOnly(formData.lastName) ||
-      isWhitespaceOnly(formData.email) ||
-      isWhitespaceOnly(formData.message) ||
-      isWhitespaceOnly(formData.type)
-    ) {
+    const newErrors = {
+      firstName: isWhitespaceOnly(formData.firstName),
+      lastName: isWhitespaceOnly(formData.lastName),
+      email: isWhitespaceOnly(formData.email),
+      type: isWhitespaceOnly(formData.type),
+      message: isWhitespaceOnly(formData.message),
+    };
+
+    if (formData["bot-field"] || Object.values(newErrors).some(Boolean)) {
+      setErrors(newErrors);
       toast({
         title: "Invalid Submission",
         description: "Please fill out all required fields correctly.",
@@ -164,30 +178,40 @@ const Contact = () => {
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-              />
-              <Input
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
+              <div>
+                <Input
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.firstName && <p className="text-red-500 text-sm mt-1">First name is required.</p>}
+              </div>
+              <div>
+                <Input
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.lastName && <p className="text-red-500 text-sm mt-1">Last name is required.</p>}
+              </div>
             </div>
 
-            <Input
-              name="email"
-              type="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Your Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && <p className="text-red-500 text-sm mt-1">A valid email is required.</p>}
+            </div>
+
             <Input
               name="phone"
               type="tel"
@@ -196,25 +220,31 @@ const Contact = () => {
               onChange={handleChange}
             />
 
-            <Select value={formData.type} onValueChange={handleTypeChange} required>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Inquiry Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="general">General Question</SelectItem>
-                <SelectItem value="vendor">Vendor Inquiry</SelectItem>
-                <SelectItem value="event">Event Opportunity</SelectItem>
-                <SelectItem value="press">Press / Media</SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Select value={formData.type} onValueChange={handleTypeChange} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Inquiry Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General Question</SelectItem>
+                  <SelectItem value="vendor">Vendor Inquiry</SelectItem>
+                  <SelectItem value="event">Event Opportunity</SelectItem>
+                  <SelectItem value="press">Press / Media</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.type && <p className="text-red-500 text-sm mt-1">Please select an inquiry type.</p>}
+            </div>
 
-            <Textarea
-              name="message"
-              placeholder="Your Message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <Textarea
+                name="message"
+                placeholder="Your Message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+              />
+              {errors.message && <p className="text-red-500 text-sm mt-1">Message is required.</p>}
+            </div>
 
             <Button
               type="submit"
