@@ -152,7 +152,7 @@ const SuggestLocation = () => {
         {submitted && (
           <div className="bg-green-100 border border-green-300 text-green-800 px-6 py-4 rounded-md text-center text-sm">
             🎉 <strong>Thanks for the suggestion!</strong><br />
-            If this location picks up Rubber Ducky, we’ll reach out with a thank-you gift.
+            If this store picks us up, you might get a Ducky gift!
           </div>
         )}
 
