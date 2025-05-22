@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -34,6 +36,19 @@ const Contact = () => {
   const [showThankYou, setShowThankYou] = useState(false);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const scriptId = "recaptcha-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const isWhitespaceOnly = (value: string) => value.trim() === "";
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -47,17 +62,35 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (formData["bot-field"]) {
-      console.warn("Bot detected. Submission blocked.");
+    if (
+      formData["bot-field"] ||
+      isWhitespaceOnly(formData.firstName) ||
+      isWhitespaceOnly(formData.lastName) ||
+      isWhitespaceOnly(formData.email) ||
+      isWhitespaceOnly(formData.message) ||
+      isWhitespaceOnly(formData.type)
+    ) {
+      toast({
+        title: "Invalid Submission",
+        description: "Please fill out all required fields correctly.",
+        variant: "destructive",
+      });
       setLoading(false);
       return;
     }
 
     try {
+      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" });
+
+      const payload = {
+        ...formData,
+        "g-recaptcha-response": token,
+      };
+
       await fetch("https://hook.us2.make.com/6q3ncobyykeu5vq8e4bdpexfoe4t0hy8", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData as any).toString(),
+        body: new URLSearchParams(payload as any).toString(),
       });
 
       toast({
@@ -123,7 +156,6 @@ const Contact = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-6 border">
-            {/* Honeypot */}
             <input
               type="hidden"
               name="bot-field"
@@ -196,7 +228,6 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Thank You Modal */}
       <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
         <DialogContent className="max-w-md text-center">
           <DialogHeader>
