@@ -12,7 +12,7 @@ export const Footer = () => {
     className="relative py-10 px-4 md:px-8"
     style={{
       backgroundColor: "rgba(253, 242, 33, 0.92)", // rich yellow overlay
-      backgroundImage: "url('/main_bg.jpg')",
+      backgroundImage: "url('/main_bg_duck.svg')",
       backgroundRepeat: "repeat",
       backgroundSize: "1500px auto",
       backgroundBlendMode: "multiply",

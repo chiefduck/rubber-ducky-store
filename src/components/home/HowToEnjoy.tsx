@@ -30,7 +30,7 @@ const scenarios = [
 
 export const HowToEnjoy = () => {
   return (
-    <section className="py-20 px-4 md:px-8 bg-ducky-cream">
+    <section className="py-20 px-4 md:px-8 ">
       <div className="container mx-auto text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-extrabold text-ducky-red mb-4">
           How to Enjoy Rubber Ducky

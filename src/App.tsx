@@ -31,7 +31,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-      <div className="bg-[url('/main_bg.jpg')] bg-repeat bg-cover bg-center min-h-screen">
+      <div className="bg-[url('/main_bg_duck.svg')] bg-no-repeat bg-center bg-[length:100%_auto] min-h-screen">
+
         <Toaster />
         <Sonner />
         <BrowserRouter>

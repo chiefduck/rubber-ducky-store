@@ -42,20 +42,22 @@ export const Features = () => {
 
   return (
     <>
-      <section className="py-12 px-4 md:px-8">
-        <div className="container mx-auto">
+      <section className="relative z-10 py-12 px-4 md:px-8">
+  <div className="max-w-7xl mx-auto">
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center text-center p-6"
+                className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg"
+
               >
                 <div className="mb-4">{feature.icon}</div>
                 <h3 className="font-bold text-lg mb-2 text-black">
                   {feature.title}
                 </h3>
                 <p className="text-black/70 mb-4">{feature.description}</p>
-
+  
                 {feature.link === "/ingredients" ? (
                   <Button
                     variant="outline"
@@ -92,7 +94,7 @@ export const Features = () => {
           </div>
         </div>
       </section>
-
+  
       {/* INGREDIENTS MODAL */}
       <Dialog open={showIngredientsModal} onOpenChange={setShowIngredientsModal}>
         <DialogContent className="max-w-lg">
@@ -120,6 +122,7 @@ export const Features = () => {
       </Dialog>
     </>
   );
+  
 };
 
 export default Features;
