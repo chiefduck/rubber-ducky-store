@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -50,10 +48,8 @@ const WholesaleApplication = () => {
   };
 
   return (
-    <div className="min-h-screen bg-ducky-cream">
-      <Header />
-
-      <main className="container mx-auto py-12 px-4 md:px-8">
+    <main className="min-h-screen bg-ducky-cream">
+      <div className="container mx-auto py-12 px-4 md:px-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-4xl font-bold mb-4 text-black">Wholesale Application</h1>
           <p className="text-lg text-black/70 mb-8">
@@ -129,11 +125,10 @@ const WholesaleApplication = () => {
             </Button>
           </form>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </main>
   );
 };
 
 export default WholesaleApplication;
+

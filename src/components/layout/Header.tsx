@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Menu, Search, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,9 +63,7 @@ export const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon">
-            <Search className="h-5 w-5" />
-          </Button>
+          
           
           {user ? (
             <DropdownMenu>

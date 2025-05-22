@@ -1,4 +1,4 @@
-
+import Layout from "@/components/layout/Layout";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +19,10 @@ import Contact from "./pages/Contact";
 import ScrollToTop from "@/components/ScrollToTop"; // adjust path if needed
 import ArticleDetail from "./pages/articles/ArticleDetail";
 import SingleRecipe from "./pages/recipes/SingleRecipe.tsx";
+import PrivacyPolicy from "@/pages/policies/PrivacyPolicy";
+import ShippingPolicy from "@/pages/policies/ShippingPolicy";
+import RefundPolicy from "@/pages/policies/RefundPolicy";
+import TermsOfService from "@/pages/policies/TermsOfService";
 
 
 const queryClient = new QueryClient();
@@ -32,22 +36,34 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
         <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/products/:slug" element={<ProductDetail />} />
-            <Route path="/store-locator" element={<StoreLocator />} />
-            <Route path="/recipes" element={<Recipes />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/wholesale/apply" element={<WholesaleApplication />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/articles/:slug" element={<ArticleDetail />} />
-            <Route path="/recipes/:slug" element={<SingleRecipe />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Routes>
+  {/* Wrap all public pages inside Layout */}
+  <Route path="/" element={<Layout />}>
+    <Route index element={<Index />} />
+    <Route path="account" element={<AccountPage />} />
+    <Route path="products/:slug" element={<ProductDetail />} />
+    <Route path="store-locator" element={<StoreLocator />} />
+    <Route path="recipes" element={<Recipes />} />
+    <Route path="recipes/:slug" element={<SingleRecipe />} />
+    <Route path="articles" element={<Articles />} />
+    <Route path="articles/:slug" element={<ArticleDetail />} />
+    <Route path="about" element={<About />} />
+    <Route path="wholesale/apply" element={<WholesaleApplication />} />
+    <Route path="contact" element={<Contact />} />
+
+    {/* Policies */}
+    <Route path="privacy-policy" element={<PrivacyPolicy />} />
+    <Route path="shipping-policy" element={<ShippingPolicy />} />
+    <Route path="refund-policy" element={<RefundPolicy />} />
+    <Route path="terms-of-service" element={<TermsOfService />} />
+
+    {/* Not Found page (inside Layout too) */}
+    <Route path="*" element={<NotFound />} />
+  </Route>
+
+  {/* Auth page stays outside layout if it has unique layout */}
+  <Route path="/auth" element={<Auth />} />
+</Routes>
         </BrowserRouter>
         </div>
       </AuthProvider>

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SuggestLocationFooterLink from "@/components/buttons/SuggestLocationFooterLink";
+
 
 export const Footer = () => {
   return (
@@ -89,30 +91,31 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/faqs" className="text-black/70 hover:text-ducky-red transition-colors">
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link to="/shipping" className="text-black/70 hover:text-ducky-red transition-colors">
+                <Link to="/shipping-policy" className="text-black/70 hover:text-ducky-red transition-colors">
                   Shipping Policy
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="text-black/70 hover:text-ducky-red transition-colors">
+                <Link to="/refund-policy" className="text-black/70 hover:text-ducky-red transition-colors">
                   Returns & Refunds
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-black/70 hover:text-ducky-red transition-colors">
+                <Link to="/privacy-policy" className="text-black/70 hover:text-ducky-red transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-black/70 hover:text-ducky-red transition-colors">
+                <Link to="/terms-of-service" className="text-black/70 hover:text-ducky-red transition-colors">
                   Terms of Service
                 </Link>
               </li>
+              <li>
+                <Link to="/wholesale/apply" className="text-black/70 hover:text-ducky-red transition-colors">
+                  Wholesale
+                </Link>
+              </li>
+             
             </ul>
           </div>
           

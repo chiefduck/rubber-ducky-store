@@ -10,8 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Inbox, Users, CalendarHeart, Megaphone } from "lucide-react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -91,7 +89,6 @@ const Contact = () => {
 
   return (
     <>
-      <Header />
       <section className="py-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl font-extrabold text-ducky-red mb-2">Get In Touch</h1>
@@ -198,7 +195,6 @@ const Contact = () => {
           </form>
         </div>
       </section>
-      <Footer />
 
       {/* Thank You Modal */}
       <Dialog open={showThankYou} onOpenChange={setShowThankYou}>

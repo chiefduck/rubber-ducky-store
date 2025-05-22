@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
+import SuggestLocationButton from "@/components/buttons/SuggestLocationButton";
+
 
 type Location = {
   id: string;
@@ -23,7 +23,6 @@ type Location = {
 
 const StoreLocator = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState("All");
   const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
@@ -64,17 +63,13 @@ const StoreLocator = () => {
       location.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       location.zipCode?.includes(searchTerm);
 
-    const matchesType =
-      selectedType === "All" || location.type?.toLowerCase() === selectedType.toLowerCase();
 
-    return matchesSearch && matchesType && location.latitude !== null && location.longitude !== null && !isNaN(location.latitude) && !isNaN(location.longitude);
+    return matchesSearch && location.latitude !== null && location.longitude !== null && !isNaN(location.latitude) && !isNaN(location.longitude);
   });
 
   return (
-    <div className="min-h-screen bg-ducky-cream">
-      <Header />
-
-      <main className="container mx-auto py-12 px-4 md:px-8">
+    <main className="min-h-screen bg-ducky-cream">
+      <div className="container mx-auto py-12 px-4 md:px-8">
         {/* Title */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-black">Find Our Drinks</h1>
@@ -98,19 +93,14 @@ const StoreLocator = () => {
           </div>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {["All", "Retail", "Bar", "Restaurant", "Liquor Store"].map((type) => (
-            <Button
-              key={type}
-              variant={selectedType === type ? "yellow" : "outline"}
-              onClick={() => setSelectedType(type)}
-              className="capitalize text-sm px-4 py-2"
-            >
-              {type}
-            </Button>
-          ))}
-        </div>
+        {/* Suggest Location Button CTA */}
+<div className="text-center mb-12">
+  <p className="text-lg text-black/70 mb-4">
+    Don’t see your city or store listed?
+  </p>
+  <SuggestLocationButton />
+</div>
+
 
         {/* Map + Locations */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -185,24 +175,21 @@ const StoreLocator = () => {
             you can always order directly from our online store with shipping available nationwide.
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-4">
-            <Button variant="yellow" size="lg" asChild>
-              <Link to="/suggest">Suggest a Location</Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="text-ducky-red border-ducky-red hover:bg-ducky-red/10"
-              asChild
-            >
-              <Link to="https://duckydrinks.com/collections/all" target="_blank">
-                Shop Online
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </main>
+  <SuggestLocationButton />
+  <Button
+    variant="outline"
+    className="text-ducky-red border-ducky-red hover:bg-ducky-red/10"
+    asChild
+  >
+    <Link to="https://duckydrinks.com/collections/all" target="_blank">
+      Shop Online
+    </Link>
+  </Button>
+</div>
 
-      <Footer />
-    </div>
+        </div>
+      </div>
+    </main>
   );
 };
 
