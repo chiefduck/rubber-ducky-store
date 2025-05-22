@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const SuggestLocation = () => {
   const [formData, setFormData] = useState({
@@ -26,14 +28,41 @@ const SuggestLocation = () => {
     "bot-field": "",
   });
 
+  const [errors, setErrors] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    storeName: false,
+    storeType: false,
+    city: false,
+    state: false,
+    zip: false,
+  });
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const scriptId = "recaptcha-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const isWhitespaceOnly = (value: string) => value.trim() === "";
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    if (name in errors) {
+      setErrors({ ...errors, [name]: false });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,11 +75,35 @@ const SuggestLocation = () => {
       return;
     }
 
+    const newErrors = {
+      firstName: isWhitespaceOnly(formData.firstName),
+      lastName: isWhitespaceOnly(formData.lastName),
+      email: isWhitespaceOnly(formData.email),
+      storeName: isWhitespaceOnly(formData.storeName),
+      storeType: isWhitespaceOnly(formData.storeType),
+      city: isWhitespaceOnly(formData.city),
+      state: isWhitespaceOnly(formData.state),
+      zip: isWhitespaceOnly(formData.zip),
+    };
+
+    if (Object.values(newErrors).some(Boolean)) {
+      setErrors(newErrors);
+      setLoading(false);
+      return;
+    }
+
     try {
+      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "submit" });
+
+      const payload = {
+        ...formData,
+        "g-recaptcha-response": token,
+      };
+
       await fetch("https://hook.us2.make.com/hkven6egr1clp7n5luofacw6u4p2s4lo", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData as any).toString(),
+        body: new URLSearchParams(payload as any).toString(),
       });
 
       setSubmitted(true);
@@ -76,20 +129,19 @@ const SuggestLocation = () => {
 
   return (
     <section className="py-12 px-4 md:px-8 ">
-  <div className="max-w-2xl mx-auto text-center mb-10">
-    <h2 className="text-3xl md:text-4xl font-extrabold text-ducky-red mb-3">
-      Know a Spot That Needs Ducky?
-    </h2>
-    <p className="text-ducky-red/80 text-base md:text-lg">
-      Help us grow! Suggest a store, bar, or cafe near you that should carry Rubber Ducky.
-    </p>
-  </div>
+      <div className="max-w-2xl mx-auto text-center mb-10">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-ducky-red mb-3">
+          Know a Spot That Needs Ducky?
+        </h2>
+        <p className="text-ducky-red/80 text-base md:text-lg">
+          Help us grow! Suggest a store, bar, or cafe near you that should carry Rubber Ducky.
+        </p>
+      </div>
 
-  <form
-    onSubmit={handleSubmit}
-    className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8 space-y-6"
-  >
-        {/* Honeypot Field */}
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8 space-y-6"
+      >
         <input
           type="hidden"
           name="bot-field"
@@ -115,6 +167,7 @@ const SuggestLocation = () => {
               placeholder="Chief"
               required
             />
+            {errors.firstName && <p className="text-red-500 text-sm">First name is required.</p>}
           </div>
           <div>
             <Label htmlFor="lastName">Last Name</Label>
@@ -126,6 +179,7 @@ const SuggestLocation = () => {
               placeholder="Duck"
               required
             />
+            {errors.lastName && <p className="text-red-500 text-sm">Last name is required.</p>}
           </div>
         </div>
 
@@ -140,6 +194,7 @@ const SuggestLocation = () => {
             placeholder="you@example.com"
             required
           />
+          {errors.email && <p className="text-red-500 text-sm">Email is required.</p>}
         </div>
 
         <div>
@@ -152,25 +207,27 @@ const SuggestLocation = () => {
             placeholder="Ducky's Liquor"
             required
           />
+          {errors.storeName && <p className="text-red-500 text-sm">Store name is required.</p>}
         </div>
 
         <div>
           <Label htmlFor="storeType">Store Type</Label>
           <Select
-  name="storeType"
-  value={formData.storeType}
-  onValueChange={(value) => setFormData({ ...formData, storeType: value })}
-  required
->
-  <SelectTrigger className="w-full">
-    <SelectValue placeholder="Select store type" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="Liquor Store">Liquor Store</SelectItem>
-    <SelectItem value="Restaurant / Bar">Restaurant / Bar</SelectItem>
-    <SelectItem value="Other Retail">Other Retail</SelectItem>
-  </SelectContent>
-</Select>
+            name="storeType"
+            value={formData.storeType}
+            onValueChange={(value) => setFormData({ ...formData, storeType: value })}
+            required
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select store type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Liquor Store">Liquor Store</SelectItem>
+              <SelectItem value="Restaurant / Bar">Restaurant / Bar</SelectItem>
+              <SelectItem value="Other Retail">Other Retail</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.storeType && <p className="text-red-500 text-sm">Store type is required.</p>}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -183,6 +240,7 @@ const SuggestLocation = () => {
               onChange={handleChange}
               required
             />
+            {errors.city && <p className="text-red-500 text-sm">City is required.</p>}
           </div>
           <div>
             <Label htmlFor="state">State</Label>
@@ -193,6 +251,7 @@ const SuggestLocation = () => {
               onChange={handleChange}
               required
             />
+            {errors.state && <p className="text-red-500 text-sm">State is required.</p>}
           </div>
           <div>
             <Label htmlFor="zip">ZIP Code</Label>
@@ -203,6 +262,7 @@ const SuggestLocation = () => {
               onChange={handleChange}
               required
             />
+            {errors.zip && <p className="text-red-500 text-sm">ZIP code is required.</p>}
           </div>
         </div>
 
