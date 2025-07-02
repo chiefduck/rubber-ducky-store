@@ -128,7 +128,7 @@ const SuggestLocation = () => {
   };
 
   return (
-    <section className="py-12 px-4 md:px-8 ">
+    <section className="min-h-screen flex flex-col justify-center py-12 px-4 md:px-8 overflow-y-auto">
       <div className="max-w-2xl mx-auto text-center mb-10">
         <h2 className="text-3xl md:text-4xl font-extrabold text-ducky-red mb-3">
           Know a Spot That Needs Ducky?
@@ -162,6 +162,7 @@ const SuggestLocation = () => {
             <Input
               name="firstName"
               id="firstName"
+              className="w-full"
               value={formData.firstName}
               onChange={handleChange}
               placeholder="Chief"
@@ -174,6 +175,7 @@ const SuggestLocation = () => {
             <Input
               name="lastName"
               id="lastName"
+              className="w-full"
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Duck"
@@ -189,6 +191,7 @@ const SuggestLocation = () => {
             name="email"
             id="email"
             type="email"
+            className="w-full"
             value={formData.email}
             onChange={handleChange}
             placeholder="you@example.com"
@@ -202,6 +205,7 @@ const SuggestLocation = () => {
           <Input
             name="storeName"
             id="storeName"
+            className="w-full"
             value={formData.storeName}
             onChange={handleChange}
             placeholder="Ducky's Liquor"
@@ -236,6 +240,7 @@ const SuggestLocation = () => {
             <Input
               name="city"
               id="city"
+              className="w-full"
               value={formData.city}
               onChange={handleChange}
               required
@@ -247,6 +252,7 @@ const SuggestLocation = () => {
             <Input
               name="state"
               id="state"
+              className="w-full"
               value={formData.state}
               onChange={handleChange}
               required
@@ -258,6 +264,7 @@ const SuggestLocation = () => {
             <Input
               name="zip"
               id="zip"
+              className="w-full"
               value={formData.zip}
               onChange={handleChange}
               required
