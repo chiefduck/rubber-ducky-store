@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import Papa from "papaparse"; // ✅ New: PapaParse
+import GoogleMap from "@/components/GoogleMap";
 import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import Map from "@/components/Map";
 import SuggestLocationButton from "@/components/buttons/SuggestLocationButton";
-
 
 type Location = {
   id: string;
@@ -26,35 +26,35 @@ const StoreLocator = () => {
   const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
-    fetch("/.netlify/functions/get-locations")
-      .then((res) => res.json())
-      .then((data) => {
-        const mapped: Location[] = data.map((f) => {
-          const lat = typeof f.latitude === "number" ? f.latitude : parseFloat(String(f.latitude || "").trim());
-          const lng = typeof f.longitude === "number" ? f.longitude : parseFloat(String(f.longitude || "").trim());
-
-          const latitude = !isNaN(lat) ? lat : null;
-          const longitude = !isNaN(lng) ? lng : null;
-
+    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQrr85UW34Ge71wwYvg_tYIYmtVoELDjzg7JnH0-Dc0if27qLB2m2JE2xXGtlHq3T9H35XBinXvPmIg/pub?gid=0&single=true&output=csv")
+      .then(res => res.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, { header: true });
+        const mapped: Location[] = parsed.data.map((row: any, index: number) => {
+          const lat = parseFloat(String(row.Latitude || "").trim());
+          const lng = parseFloat(String(row.Longitude || "").trim());
           return {
-            id: f.id,
-            name: f.name?.trim() || "Unknown",
-            address: f.address?.trim() || "",
-            city: f.city?.trim() || "",
-            state: f.state?.trim() || "",
-            zipCode: String(f.zipCode || ""),
-            phone: f.phone?.trim(),
-            hours: f.hours?.trim(),
-            type: f.type?.trim(),
-            latitude,
-            longitude,
+            id: `${index}`,
+            name: row["Store Name"]?.trim() || "Unknown",
+            address: row.Address?.trim() || "",
+            city: row.City?.trim() || "",
+            state: row.State?.trim() || "",
+            zipCode: String(row.Zip || ""),
+            phone: row.Phone?.trim() || "",
+            hours: row.Hours?.trim() || "",
+            type: row.Type?.trim() || "",
+            latitude: !isNaN(lat) ? lat : null,
+            longitude: !isNaN(lng) ? lng : null,
           };
         });
 
         setLocations(mapped);
       })
-      .catch((err) => console.error("❌ Fetch error:", err));
+      .catch(err => console.error("❌ CSV Fetch error:", err));
   }, []);
+
+  // 👇 Everything else stays exactly the same...
+
 
   const filteredLocations = locations.filter((location) => {
     const matchesSearch =
@@ -63,8 +63,13 @@ const StoreLocator = () => {
       location.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       location.zipCode?.includes(searchTerm);
 
-
-    return matchesSearch && location.latitude !== null && location.longitude !== null && !isNaN(location.latitude) && !isNaN(location.longitude);
+    return (
+      matchesSearch &&
+      location.latitude !== null &&
+      location.longitude !== null &&
+      !isNaN(location.latitude) &&
+      !isNaN(location.longitude)
+    );
   });
 
   return (
@@ -94,13 +99,10 @@ const StoreLocator = () => {
         </div>
 
         {/* Suggest Location Button CTA */}
-<div className="text-center mb-12">
-  <p className="text-lg text-black/70 mb-4">
-    Don’t see your city or store listed?
-  </p>
-  <SuggestLocationButton />
-</div>
-
+        <div className="text-center mb-12">
+          <p className="text-lg text-black/70 mb-4">Don’t see your city or store listed?</p>
+          <SuggestLocationButton />
+        </div>
 
         {/* Map + Locations */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -122,9 +124,11 @@ const StoreLocator = () => {
                     <div className="flex flex-col">
                       <div className="flex justify-between items-center mb-1">
                         <h3 className="text-lg font-bold text-black">{location.name}</h3>
-                        <span className="text-xs text-white bg-ducky-red rounded-full px-2 py-0.5">
-                          {location.type}
-                        </span>
+                        {location.type && (
+                          <span className="text-xs text-white bg-ducky-red rounded-full px-2 py-0.5">
+                            {location.type}
+                          </span>
+                        )}
                       </div>
 
                       <p className="text-black/70">{location.address}</p>
@@ -147,7 +151,7 @@ const StoreLocator = () => {
                         >
                           <Button
                             variant="outline"
-                            className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full"
+                            className="text-ducky-red border-ducky-red hover:bg-ducky-red/10 w-full mt-2"
                           >
                             <MapPin className="h-4 w-4 mr-2" />
                             Get Directions
@@ -163,7 +167,7 @@ const StoreLocator = () => {
 
           {/* Map Display */}
           <div className="rounded-2xl overflow-hidden h-[600px] bg-gray-300">
-            <Map locations={filteredLocations} />
+            <GoogleMap locations={filteredLocations} />
           </div>
         </div>
 
@@ -175,18 +179,17 @@ const StoreLocator = () => {
             you can always order directly from our online store with shipping available nationwide.
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-4">
-  <SuggestLocationButton />
-  <Button
-    variant="outline"
-    className="text-ducky-red border-ducky-red hover:bg-ducky-red/10"
-    asChild
-  >
-    <Link to="https://duckydrinks.com/collections/all" target="_blank">
-      Shop Online
-    </Link>
-  </Button>
-</div>
-
+            <SuggestLocationButton />
+            <Button
+              variant="outline"
+              className="text-ducky-red border-ducky-red hover:bg-ducky-red/10"
+              asChild
+            >
+              <Link to="https://duckydrinks.com/collections/all" target="_blank">
+                Shop Online
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </main>
