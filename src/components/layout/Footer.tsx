@@ -115,6 +115,11 @@ export const Footer = () => {
                   Wholesale
                 </Link>
               </li>
+              <li>
+                <Link to="https://duckydrinks.com/pages/joy-subscription" className="text-black/70 hover:text-ducky-red transition-colors">
+                  Manage Subscription
+                </Link>
+              </li>
              
             </ul>
           </div>
