@@ -1,122 +1,114 @@
-# Welcome to your Lovable project
 
-## Project info
+# 🦆 Rubber Ducky Drink Co. — Website
 
-**URL**: https://lovable.dev/projects/750e7918-2424-4a6a-b3f6-259d80f98042
+This is the frontend website for Rubber Ducky Drink Co. Built with **React**, **Vite**, and **TailwindCSS**.
 
-## How can I edit this code?
+- Live site: [https://drinkducky.com](https://drinkducky.com)
+- Products: Non-alcoholic, ready-to-drink margaritas
+- Primary SKUs: Classic Lime, Strawberry, Watermelon Jalapeño, Passionfruit Guava, Blueberry Mint
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Project Structure
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/750e7918-2424-4a6a-b3f6-259d80f98042) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+/public
+/src
+  /components
+  /pages
+  /sections
+  /styles
+  /assets
+vite.config.ts
+tailwind.config.js
+README.md
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛠️ Tech Stack
 
-**Use GitHub Codespaces**
+| Technology     | Purpose                                   |
+|----------------|-------------------------------------------|
+| React + Vite   | Frontend framework                        |
+| TailwindCSS    | Styling and layout                        |
+| Netlify        | Deployment + serverless functions         |
+| Google Sheets  | Source of truth for store locator data    |
+| PapaParse      | CSV parsing for dynamic store rendering   |
+| Mapbox / GMaps | Interactive maps (Google currently live)  |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🧩 Key Features
 
-This project is built with:
+- 📍 **Store Locator** with searchable map and product filtering  
+- 🛒 **Shop** page linking to external Shopify store  
+- 📄 **FAQ, Contact, About, Recipes, Articles** pages  
+- 🔥 Integrated with **Google reCAPTCHA v3** for spam protection  
+- ⚙️ Optional GHL chatbot + distributor inquiry form
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📍 Store Locator System — Rubber Ducky Drink Co.
 
-Simply open [Lovable](https://lovable.dev/projects/750e7918-2424-4a6a-b3f6-259d80f98042) and click on Share -> Publish.
+### ✅ How It Works
 
-## Can I connect a custom domain to my Lovable project?
+**Data Source:**  
+All retailer data is stored and managed in a **Google Sheet**.
 
-Yes, you can!
+**Geocoding:**  
+A **Google Apps Script** automatically fills in missing Latitude/Longitude coordinates using the **Google Maps Geocoding API** whenever new stores are added.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+**Map Rendering:**  
+The React app uses **PapaParse** to fetch and parse the published CSV file from Google Sheets and displays it on a styled **Google Map** with pins.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
 
-*************************************************
-📍 Rubber Ducky Drink Co. — Store Locator System
-✅ How It Works
-Retailer list: Managed in Google Sheets.
+### ⚙️ Core Components
 
-Geocoding: Google Apps Script automatically fills in Latitude/Longitude for new rows using the Google Maps Geocoding API.
+| Component         | Role                                                         |
+|-------------------|--------------------------------------------------------------|
+| Google Sheet      | Primary source of truth for all store locations              |
+| Apps Script       | Detects rows missing lat/lng and auto-fills coordinates      |
+| PapaParse         | Parses CSV from Google Sheets for frontend display           |
+| `GoogleMap.tsx`   | Renders the map and places location pins                     |
+| `StoreLocator.tsx`| Handles search, filtering, and display of store listings     |
 
-Map + Pins: React site uses fetch + PapaParse to load the CSV → displays stores & pins on Google Maps via the GoogleMap.tsx component.
+---
 
-⚙️ Core Pieces
-Piece	What it does
-Google Sheet	Source of truth for all stores
-Apps Script	Runs daily (or manually) to geocode new addresses
-PapaParse	Parses CSV data from Google Sheets
-GoogleMap.tsx	Renders map and drops pins
-StoreLocator.tsx	Handles search, filtering, display
+### 🔁 Workflow (How to Add a New Store)
 
-🔑 API Keys
-Key	Use
-Maps JS Key	Loads the frontend map — should have HTTP Referrer restrictions (*.drinkducky.com)
-Geocoding Key	Used ONLY by Apps Script for server-side geocoding — no referrer restrictions needed, but restrict to Geocoding API only for security
+1. **Add** the new store to the Google Sheet (leave Lat/Lng columns blank).
+2. **Run** the `geocodeNewStores` Google Apps Script manually — or wait for the daily trigger.
+3. **Done.** Lat/Lng will auto-fill → Site updates instantly via the live published CSV.
 
-🗂️ Workflow
-Add new store rows to the Sheet → leave Latitude/Longitude blank.
+> **Note:** There is no `locations.json` file — store data is pulled live from Google Sheets.
 
-Run geocodeNewStores Apps Script or wait for daily trigger.
+---
 
-Lat/Lng auto-fill → new pins appear live on site → done!
+### 🔑 API Keys
 
-✅ Where to manage keys
-Google Cloud Console → make sure your Maps JS Key and Geocoder Key are separate.
+| Key Type        | Purpose                                                      |
+|------------------|--------------------------------------------------------------|
+| Maps JavaScript  | Loads the map on the frontend. **Restrict by HTTP referrer** (`*.drinkducky.com`) |
+| Geocoding API    | Used **only by the Apps Script** for server-side lat/lng. Restrict to just the Geocoding API. No referrer needed. |
 
-Watch usage → set budget alerts.
+---
 
-⚠️ Recommended Next
-Split keys: one for frontend, one for backend.
+### 💡 Recommendations
 
-Restrict Maps JS Key by HTTP Referrers.
+- ✅ **Split keys** for frontend and backend use.
+- ✅ Restrict **Maps JS Key** to your domain only.
+- ✅ Restrict **Geocoding Key** to just the Geocoding API.
+- ✅ Set usage/billing alerts inside Google Cloud Console.
 
-Restrict Geocoding Key by API only.
+---
 
-💡 Notes
-The live site uses the full published Google Sheets CSV URL.
+### 📈 Scalability
 
-Map styling and clustering can be added later.
+This setup supports **up to ~1,000 stores** with no backend needed.
 
-System scales easily up to ~1,000 stores with no backend needed.
+- CSV from Google Sheets updates instantly when Lat/Lng is filled.
+- Works seamlessly with Google Maps pins and clustering if added in future.
 
+---

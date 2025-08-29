@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,13 +7,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { user, signOut } = useAuth();
 
   return (
@@ -34,6 +33,7 @@ export const Header = () => {
           </Link>
         </div>
         
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link to="/" className="text-black font-medium hover:text-ducky-red transition-colors">
             Home
@@ -57,14 +57,39 @@ export const Header = () => {
           <Link to="/store-locator" className="text-black font-medium hover:text-ducky-red transition-colors">
             Find Us
           </Link>
-          <Link to="/contact" className="text-black font-medium hover:text-ducky-red transition-colors">
-            Contact Us
-          </Link>
+
+          {/* Contact Us with dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className="flex items-center space-x-1 cursor-pointer group relative"
+                onMouseEnter={(e) => {
+                  const trigger = e.currentTarget.querySelector("button");
+                  if (trigger) (trigger as HTMLButtonElement).click();
+                }}
+              >
+                <Link
+                  to="/contact"
+                  className="text-black font-medium hover:text-ducky-red transition-colors"
+                >
+                  Contact Us
+                </Link>
+                <ChevronDown className="h-4 w-4 text-black group-hover:text-ducky-red transition-colors" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link to="/wholesale">Wholesale</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/manage-subscription">Manage Subscription</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
         
+        {/* User menu */}
         <div className="flex items-center space-x-2">
-          
-          
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -73,12 +98,9 @@ export const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <a 
                     href="https://account.rubberduckydrinkco.com" 
-                    className="cursor-pointer w-full" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -88,7 +110,6 @@ export const Header = () => {
                 <DropdownMenuItem asChild>
                   <a 
                     href="https://account.rubberduckydrinkco.com" 
-                    className="cursor-pointer w-full"
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -98,14 +119,12 @@ export const Header = () => {
                 <DropdownMenuItem asChild>
                   <a 
                     href="https://account.rubberduckydrinkco.com" 
-                    className="cursor-pointer w-full"
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
                     My Reviews
                   </a>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign Out</span>
@@ -119,8 +138,6 @@ export const Header = () => {
               </Button>
             </a>
           )}
-
-          {/* Cart hidden for now */}
         </div>
       </div>
       
@@ -172,13 +189,39 @@ export const Header = () => {
             >
               Find Us
             </Link>
-            <Link 
-              to="/contact" 
-              className="text-black font-medium hover:text-ducky-red transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
+
+            {/* Collapsible Contact Us */}
+            <button
+              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              className="flex items-center justify-between text-black font-medium hover:text-ducky-red transition-colors"
             >
-              Contact Us
-            </Link>
+              <Link 
+                to="/contact" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 text-left"
+              >
+                Contact Us
+              </Link>
+              <ChevronDown className={`ml-1 h-4 w-4 transform transition-transform ${mobileDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {mobileDropdownOpen && (
+              <div className="ml-4 flex flex-col space-y-3">
+                <Link 
+                  to="/wholesale" 
+                  className="text-black font-medium hover:text-ducky-red transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Wholesale
+                </Link>
+                <Link 
+                  to="/manage-subscription" 
+                  className="text-black font-medium hover:text-ducky-red transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Manage Subscription
+                </Link>
+              </div>
+            )}
 
             {user ? (
               <>
