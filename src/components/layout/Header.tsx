@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { Menu, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -8,14 +8,26 @@ import {
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react"; // make sure this is imported
+
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { user, signOut } = useAuth();
+
+  // Active link helper
+  const navClass = ({ isActive }: { isActive: boolean }) =>
+    `font-medium transition-colors ${
+      isActive ? "text-ducky-red" : "text-black hover:text-ducky-red"
+    }`;
 
   return (
     <header className="bg-ducky-yellow sticky top-0 z-50 py-2 px-4 md:px-8">
@@ -36,14 +48,12 @@ export const Header = () => {
           </Link>
         </div>
 
-        {/* Desktop Nav using NavigationMenu */}
+        {/* Desktop Nav */}
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList className="flex space-x-8">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/" className="text-black font-medium hover:text-ducky-red transition-colors">
-                  Home
-                </Link>
+                <NavLink to="/" className={navClass}>Home</NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -62,59 +72,77 @@ export const Header = () => {
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/recipes" className="text-black font-medium hover:text-ducky-red transition-colors">
-                  Recipes
-                </Link>
+                <NavLink to="/recipes" className={navClass}>Recipes</NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/articles" className="text-black font-medium hover:text-ducky-red transition-colors">
-                  Articles
-                </Link>
+                <NavLink to="/articles" className={navClass}>Articles</NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/about" className="text-black font-medium hover:text-ducky-red transition-colors">
-                  About Us
-                </Link>
+                <NavLink to="/about" className={navClass}>About Us</NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/store-locator" className="text-black font-medium hover:text-ducky-red transition-colors">
-                  Find Us
-                </Link>
+                <NavLink to="/store-locator" className={navClass}>Find Us</NavLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* Contact Us with dropdown */}
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="text-black font-medium hover:text-ducky-red">
-                Contact Us
-              </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white border shadow-md rounded-md p-2">
-                <NavigationMenuLink asChild>
-                  <Link to="/contact" className="block px-3 py-2 hover:text-ducky-red">
-                    Contact Us
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link to="https://drinkducky.com/wholesale/apply" className="block px-3 py-2 hover:text-ducky-red">
-                    Wholesale
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link to="https://duckydrinks.com/pages/joy-subscription" className="block px-3 py-2 hover:text-ducky-red">
-                    Manage Subscription
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+{/* Contact Us dropdown (using DropdownMenu for proper positioning) */}
+<NavigationMenuItem>
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button className="flex items-center text-black font-medium hover:text-ducky-red">
+        Contact Us
+        <ChevronDown className="ml-1 h-4 w-4" />
+      </button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent
+      side="bottom"
+      align="start"
+      className="bg-white border border-black/10 shadow-lg rounded-md w-56"
+    >
+      <DropdownMenuItem asChild>
+        <NavLink 
+          to="/contact" 
+          className={({ isActive }) =>
+            `block w-full px-4 py-2 rounded-t-md transition-colors ${
+              isActive ? "bg-ducky-red text-white" : "text-black hover:bg-ducky-red hover:text-white"
+            }`
+          }
+        >
+          Contact Us
+        </NavLink>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <a 
+          href="https://drinkducky.com/wholesale/apply" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block w-full px-4 py-2 text-black hover:bg-ducky-red hover:text-white"
+        >
+          Wholesale
+        </a>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <a 
+          href="https://duckydrinks.com/pages/joy-subscription" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block w-full px-4 py-2 rounded-b-md text-black hover:bg-ducky-red hover:text-white"
+        >
+          Manage Subscription
+        </a>
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -124,32 +152,57 @@ export const Header = () => {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>
-                    <User className="h-5 w-5" />
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white border shadow-md rounded-md p-2">
-                    <NavigationMenuLink asChild>
-                      <a href="https://account.rubberduckydrinkco.com" target="_blank" rel="noopener noreferrer">
-                        Account Settings
-                      </a>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <a href="https://account.rubberduckydrinkco.com" target="_blank" rel="noopener noreferrer">
-                        My Orders
-                      </a>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <a href="https://account.rubberduckydrinkco.com" target="_blank" rel="noopener noreferrer">
-                        My Reviews
-                      </a>
-                    </NavigationMenuLink>
-                    <button
-                      onClick={() => signOut()}
-                      className="block w-full text-left text-black hover:text-ducky-red px-3 py-2"
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <User className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="bottom"
+                      align="end"
+                      className="bg-white border border-black/10 shadow-lg rounded-md w-56"
                     >
-                      <LogOut className="inline mr-2 h-4 w-4" /> Sign Out
-                    </button>
-                  </NavigationMenuContent>
+                      <DropdownMenuItem asChild>
+                        <a 
+                          href="https://account.rubberduckydrinkco.com" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="block w-full px-4 py-2 text-black hover:bg-ducky-red hover:text-white"
+                        >
+                          Account Settings
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <a 
+                          href="https://account.rubberduckydrinkco.com" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="block w-full px-4 py-2 text-black hover:bg-ducky-red hover:text-white"
+                        >
+                          My Orders
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <a 
+                          href="https://account.rubberduckydrinkco.com" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="block w-full px-4 py-2 text-black hover:bg-ducky-red hover:text-white"
+                        >
+                          My Reviews
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <button
+                          onClick={() => signOut()}
+                          className="block w-full text-left px-4 py-2 text-black hover:bg-ducky-red hover:text-white"
+                        >
+                          <LogOut className="inline mr-2 h-4 w-4" /> Sign Out
+                        </button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
@@ -163,26 +216,27 @@ export const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu (collapsible for Contact Us) */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-ducky-yellow border-t border-black/10 py-4 px-6 z-50 shadow-lg">
           <nav className="flex flex-col space-y-4">
-            <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className={navClass}>Home</NavLink>
             <a href="https://duckydrinks.com/products/classic-margarita" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>Shop</a>
-            <Link to="/recipes" onClick={() => setMobileMenuOpen(false)}>Recipes</Link>
-            <Link to="/articles" onClick={() => setMobileMenuOpen(false)}>Articles</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
-            <Link to="/store-locator" onClick={() => setMobileMenuOpen(false)}>Find Us</Link>
+            <NavLink to="/recipes" onClick={() => setMobileMenuOpen(false)} className={navClass}>Recipes</NavLink>
+            <NavLink to="/articles" onClick={() => setMobileMenuOpen(false)} className={navClass}>Articles</NavLink>
+            <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className={navClass}>About Us</NavLink>
+            <NavLink to="/store-locator" onClick={() => setMobileMenuOpen(false)} className={navClass}>Find Us</NavLink>
 
+            {/* Collapsible Contact Us */}
             <button onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                     className="flex items-center justify-between text-black font-medium hover:text-ducky-red transition-colors">
               Contact Us
             </button>
             {mobileDropdownOpen && (
               <div className="ml-4 flex flex-col space-y-3">
-                <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
-                <Link to="https://drinkducky.com/wholesale/apply" onClick={() => setMobileMenuOpen(false)}>Wholesale</Link>
-                <Link to="https://duckydrinks.com/pages/joy-subscription" onClick={() => setMobileMenuOpen(false)}>Manage Subscription</Link>
+                <NavLink to="/contact" onClick={() => setMobileMenuOpen(false)} className={navClass}>Contact Us</NavLink>
+                <a href="https://drinkducky.com/wholesale/apply" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)} className="text-black hover:text-ducky-red">Wholesale</a>
+                <a href="https://drinkducky.com/manage-subscription" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)} className="text-black hover:text-ducky-red">Manage Subscription</a>
               </div>
             )}
           </nav>
