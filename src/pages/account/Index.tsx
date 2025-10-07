@@ -1,5 +1,5 @@
 
-import { Header } from "@/components/layout/Header";
+import Header from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountOrders } from "@/components/account/AccountOrders";

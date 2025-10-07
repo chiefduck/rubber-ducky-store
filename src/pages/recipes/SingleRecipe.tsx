@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { getRecipeBySlug } from '@/data/recipes';
-import { Header } from '@/components/layout/Header';
+import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Clock, User } from 'lucide-react';
 

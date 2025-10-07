@@ -16,12 +16,11 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-export const Header = () => {
+const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { user, signOut } = useAuth();
 
-  // Active link styles
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `font-medium transition-colors ${
       isActive ? "text-ducky-red" : "text-black hover:text-ducky-red"
@@ -63,7 +62,6 @@ export const Header = () => {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* ✅ Fixed Shop route */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <NavLink to="/shop" className={navClass}>
@@ -104,7 +102,6 @@ export const Header = () => {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* Contact Dropdown */}
             <NavigationMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -210,7 +207,7 @@ export const Header = () => {
         </div>
       </div>
 
-      {/* ✅ Mobile Menu (fixed internal Shop route) */}
+      {/* ✅ Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-ducky-yellow border-t border-black/10 py-4 px-6 z-50 shadow-lg">
           <nav className="flex flex-col space-y-4">
@@ -226,4 +223,52 @@ export const Header = () => {
             <NavLink to="/articles" onClick={() => setMobileMenuOpen(false)} className={navClass}>
               Articles
             </NavLink>
-            <NavLink to="/about" onClic
+            <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className={navClass}>
+              About Us
+            </NavLink>
+            <NavLink to="/store-locator" onClick={() => setMobileMenuOpen(false)} className={navClass}>
+              Find Us
+            </NavLink>
+
+            <button
+              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              className="flex items-center justify-between text-black font-medium hover:text-ducky-red transition-colors"
+            >
+              Contact Us
+            </button>
+
+            {mobileDropdownOpen && (
+              <div className="ml-4 flex flex-col space-y-3">
+                <NavLink
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={navClass}
+                >
+                  Contact Us
+                </NavLink>
+                <NavLink
+                  to="/wholesale/apply"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-black hover:text-ducky-red"
+                >
+                  Wholesale
+                </NavLink>
+                <a
+                  href="https://duckydrinks.com/pages/joy-subscription"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-black hover:text-ducky-red"
+                >
+                  Manage Subscription
+                </a>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Header;

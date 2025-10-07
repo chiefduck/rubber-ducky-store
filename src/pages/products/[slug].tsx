@@ -2,13 +2,15 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
-import { Header } from "@/components/layout/Header";
+import Header from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { ProductReviews } from "@/components/products/ProductReviews";
 import { NutritionFacts } from "@/components/products/NutritionFacts";
 import { getProductBySlug } from "@/data/products";
+import Header from "@/components/layout/Header";
+
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -155,4 +157,5 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default Header;
+

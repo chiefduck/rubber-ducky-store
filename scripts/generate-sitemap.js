@@ -11,7 +11,7 @@ import fetch from "node-fetch";
 
 // 🧩 Env vars
 const DOMAIN = process.env.VITE_SITE_URL || "https://drinkducky.com";
-const SHOPIFY_DOMAIN = process.env.VITE_SHOPIFY_STORE_DOMAIN!;
+const SHOPIFY_DOMAIN = process.env.VITE_SHOPIFY_STORE_DOMAIN;
 const SHOPIFY_TOKEN = process.env.VITE_SHOPIFY_STOREFRONT_TOKEN!;
 
 // 🧠 Types for Shopify response

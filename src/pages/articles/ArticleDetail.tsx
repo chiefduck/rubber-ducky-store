@@ -3,7 +3,7 @@
 
 import { useParams } from "react-router-dom";
 import { getArticleBySlug } from "@/data/articles";
-import { Header } from "@/components/layout/Header";
+import Header from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { marked } from "marked";
 import { Calendar, User } from "lucide-react";
