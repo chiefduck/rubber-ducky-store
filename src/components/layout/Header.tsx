@@ -58,17 +58,10 @@ export const Header = () => {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <a 
-                  href="https://duckydrinks.com/products/classic-margarita" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-black font-medium hover:text-ducky-red transition-colors"
-                >
-                  Shop
-                </a>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+  <NavigationMenuLink asChild>
+    <NavLink to="/shop" className={navClass}>Shop</NavLink>
+  </NavigationMenuLink>
+</NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
