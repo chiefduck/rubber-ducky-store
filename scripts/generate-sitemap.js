@@ -1,9 +1,8 @@
 /**
- * scripts/generate-sitemap.ts
+ * scripts/generate-sitemap.js
  * -------------------------------------
- * TypeScript version of the sitemap generator
- * Uses your VITE_ environment variables from Netlify
- * Auto-builds a full sitemap.xml with static + Shopify product pages
+ * Node.js version — works on Netlify
+ * Builds sitemap.xml with static + Shopify product pages
  */
 
 import fs from "fs";
@@ -12,27 +11,7 @@ import fetch from "node-fetch";
 // 🧩 Env vars
 const DOMAIN = process.env.VITE_SITE_URL || "https://drinkducky.com";
 const SHOPIFY_DOMAIN = process.env.VITE_SHOPIFY_STORE_DOMAIN;
-const SHOPIFY_TOKEN = process.env.VITE_SHOPIFY_STOREFRONT_TOKEN!;
-
-// 🧠 Types for Shopify response
-interface ShopifyCollection {
-  handle: string;
-}
-
-interface ShopifyProduct {
-  handle: string;
-  collections?: {
-    edges: { node: ShopifyCollection }[];
-  };
-}
-
-interface ShopifyResponse {
-  data?: {
-    products?: {
-      edges: { node: ShopifyProduct }[];
-    };
-  };
-}
+const SHOPIFY_TOKEN = process.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
 
 // 🧠 GraphQL query
 const query = `
@@ -55,7 +34,12 @@ const query = `
 `;
 
 // 🛍️ Fetch Shopify products
-async function fetchShopifyProducts(): Promise<string[]> {
+async function fetchShopifyProducts() {
+  if (!SHOPIFY_DOMAIN || !SHOPIFY_TOKEN) {
+    console.warn("⚠️ Missing Shopify credentials. Skipping dynamic products.");
+    return [];
+  }
+
   try {
     const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2025-10/graphql.json`, {
       method: "POST",
@@ -71,8 +55,7 @@ async function fetchShopifyProducts(): Promise<string[]> {
       return [];
     }
 
-    const json: ShopifyResponse = await res.json();
-
+    const json = await res.json();
     const products = json?.data?.products?.edges || [];
 
     return products.map((edge) => {
@@ -89,7 +72,7 @@ async function fetchShopifyProducts(): Promise<string[]> {
 
 // 🧾 Generate sitemap
 async function generateSitemap() {
-  const staticPages: string[] = [
+  const staticPages = [
     "/", "/shop", "/shop/drinks", "/shop/merch", "/shop/wholesale",
     "/store-locator", "/recipes", "/articles", "/about", "/contact",
     "/privacy-policy", "/refund-policy", "/shipping-policy", "/terms-of-service",
@@ -115,17 +98,12 @@ async function generateSitemap() {
     .join("");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml"
->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${xmlUrls}
 </urlset>`;
 
-  const outputPath = "./public/sitemap.xml";
-  fs.writeFileSync(outputPath, sitemap);
-  console.log(`✅ Sitemap generated successfully: ${outputPath}`);
-  console.log(`📦 Total URLs: ${allUrls.length}`);
+  fs.writeFileSync("./public/sitemap.xml", sitemap);
+  console.log(`✅ Sitemap generated successfully with ${allUrls.length} URLs`);
 }
 
 // 🚀 Run
